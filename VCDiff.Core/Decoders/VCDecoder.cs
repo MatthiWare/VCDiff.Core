@@ -29,26 +29,11 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         IByteBuffer delta;
         IByteBuffer dict;
         CustomCodeTableDecoder customTable;
-        bool googleVersion;
-        bool isStarted;
-
         static byte[] MagicBytes = new byte[] { 0xD6, 0xC3, 0xC4, 0x00, 0x00 };
 
-        public bool IsSDHCFormat
-        {
-            get
-            {
-                return googleVersion;
-            }
-        }
+        public bool IsSDHCFormat { get; private set; }
 
-        public bool IsStarted
-        {
-            get
-            {
-                return isStarted;
-            }
-        }
+        public bool IsStarted { get; private set; }
 
         /// <summary>
         /// Dict is the dictionary file
@@ -63,7 +48,8 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             this.delta = new ByteStreamReader(delta);
             this.dict = new ByteStreamReader(dict);
             this.sout = new ByteStreamWriter(sout);
-            isStarted = false;
+
+            IsStarted = false;
         }
 
         public VCDecoder(IByteBuffer dict, IByteBuffer delta, Stream sout)
@@ -71,7 +57,8 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             this.delta = delta;
             this.dict = dict;
             this.sout = new ByteStreamWriter(sout);
-            isStarted = false;
+
+            IsStarted = false;
         }
 
         /// <summary>
@@ -144,9 +131,9 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 }
             }
 
-            googleVersion = version == 'S';
+            IsSDHCFormat = version == 'S';
 
-            isStarted = true;
+            IsStarted = true;
 
             //buffer all the dictionary up front
             dict.BufferAll();
@@ -163,7 +150,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         /// <returns></returns>
         public VCDiffResult Decode(out long bytesWritten)
         {
-            if (!isStarted)
+            if (!IsStarted)
             {
                 bytesWritten = 0;
                 return VCDiffResult.ERRROR;
@@ -179,12 +166,12 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 //delta is streamed in order aka not random access
                 WindowDecoder w = new WindowDecoder(dict.Length, delta);
 
-                if (w.Decode(googleVersion))
+                if (w.Decode(IsSDHCFormat))
                 {
                     using (BodyDecoder body = new BodyDecoder(w, dict, delta, sout))
                     {
 
-                        if (googleVersion && w.AddRunLength == 0 && w.AddressesForCopyLength == 0 && w.InstructionAndSizesLength > 0)
+                        if (IsSDHCFormat && w.AddRunLength == 0 && w.AddressesForCopyLength == 0 && w.InstructionAndSizesLength > 0)
                         {
                             //interleaved
                             //decodedinterleave actually has an internal loop for waiting and streaming the incoming rest of the interleaved window
@@ -199,7 +186,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         }
                         //technically add could be 0 if it is all copy instructions
                         //so do an or check on those two
-                        else if (googleVersion && (w.AddRunLength > 0 || w.AddressesForCopyLength > 0) && w.InstructionAndSizesLength > 0)
+                        else if (IsSDHCFormat && (w.AddRunLength > 0 || w.AddressesForCopyLength > 0) && w.InstructionAndSizesLength > 0)
                         {
                             //not interleaved
                             //expects the full window to be available
@@ -214,7 +201,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                             bytesWritten += body.Decoded;
                         }
-                        else if (!googleVersion)
+                        else if (!IsSDHCFormat)
                         {
                             //not interleaved
                             //expects the full window to be available 

@@ -25,33 +25,11 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 {
     public class CustomCodeTableDecoder
     {
-        byte nearSize;
-        byte sameSize;
-        CodeTable table;
+        public byte NearSize { get; private set; }
 
-        public byte NearSize
-        {
-            get
-            {
-                return nearSize;
-            }
-        }
+        public byte SameSize { get; private set; }
 
-        public byte SameSize
-        {
-            get
-            {
-                return sameSize;
-            }
-        }
-
-        public CodeTable CustomTable
-        {
-            get
-            {
-                return table;
-            }
-        }
+        public CodeTable CustomTable { get; private set; }
 
         public CustomCodeTableDecoder()
         {
@@ -75,17 +53,17 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             //they are bytes in the RFC spec, but for some reason Google uses the varint to read which does
             //the same thing if it is a single byte
             //but I am going to just read in bytes because it is the RFC standard
-            nearSize = codeTable.ReadByte();
-            sameSize = codeTable.ReadByte();
+            NearSize = codeTable.ReadByte();
+            SameSize = codeTable.ReadByte();
 
-            if (nearSize == 0 || sameSize == 0 || nearSize > byte.MaxValue || sameSize > byte.MaxValue)
+            if (NearSize == 0 || SameSize == 0 || NearSize > byte.MaxValue || SameSize > byte.MaxValue)
             {
                 return VCDiffResult.ERRROR;
             }
 
-            table = new CodeTable();
+            CustomTable = new CodeTable();
             //get the original bytes of the default codetable to use as a dictionary
-            IByteBuffer dictionary = table.GetBytes();
+            IByteBuffer dictionary = CustomTable.GetBytes();
 
             //Decode the code table VCDiff file itself
             //stream the decoded output into a memory stream
@@ -108,7 +86,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 }
 
                 //set the new table data that was decoded
-                if (!table.SetBytes(sout.ToArray()))
+                if (!CustomTable.SetBytes(sout.ToArray()))
                 {
                     result = VCDiffResult.ERRROR;
                 }

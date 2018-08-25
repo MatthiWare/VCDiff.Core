@@ -24,9 +24,9 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         const ulong kMult = 257;
         const ulong kBase = (1 << 23);
 
-        int size = 0;
-        ulong[] removeTable;
-        ulong multiplier;
+        private readonly int size = 0;
+        private readonly ulong[] removeTable;
+        private readonly ulong multiplier;
 
         /// <summary>
         /// Rolling Hash Constructor

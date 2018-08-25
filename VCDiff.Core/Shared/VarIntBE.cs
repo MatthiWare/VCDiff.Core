@@ -105,7 +105,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return length;
         }
 
-        public static int AppendInt32(int v, List<byte> buffer)
+        public static int AppendInt32(int v, IList<byte> buffer)
         {
             byte[] varint = new byte[int32Max];
             int length = EncodeInt32(v, varint);
@@ -141,7 +141,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return length;
         }
 
-        public static int AppendInt64(long v, List<byte> buffer)
+        public static int AppendInt64(long v, IList<byte> buffer)
         {
             byte[] varint = new byte[int64Max];
             int length = EncodeInt64(v, varint);

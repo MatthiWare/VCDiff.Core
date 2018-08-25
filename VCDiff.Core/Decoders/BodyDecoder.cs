@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MatthiWare.Compression.VCDiff.Includes;
 using MatthiWare.Compression.VCDiff.Shared;
 
@@ -26,15 +27,15 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 {
     public class BodyDecoder : IDisposable
     {
-        WindowDecoder window;
-        ByteStreamWriter sout;
-        IByteBuffer dict;
-        IByteBuffer target;
-        AddressCache addressCache;
-        long decodedOnly = 0;
-        long bytesWritten = 0;
-        List<byte> targetData;
-        CustomCodeTableDecoder customTable;
+        private WindowDecoder window;
+        private ByteStreamWriter sout;
+        private IByteBuffer dict;
+        private IByteBuffer target;
+        private AddressCache addressCache;
+        private long decodedOnly = 0;
+        private long bytesWritten = 0;
+        private IList<byte> targetData;
+        private readonly CustomCodeTableDecoder customTable;
 
         /// <summary>
         /// Total bytes decoded
@@ -296,7 +297,10 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 dict.Position = decoded;
                 byte[] rbytes = dict.ReadBytes(size);
                 sout.writeBytes(rbytes);
-                targetData.AddRange(rbytes);
+
+                foreach (var b in rbytes)
+                    targetData.Add(b);
+
                 decodedOnly += size;
                 return VCDiffResult.SUCCESS;
             }
@@ -369,7 +373,10 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             byte[] rbytes = addRun.ReadBytes(size);
             sout.writeBytes(rbytes);
-            targetData.AddRange(rbytes);
+
+            foreach (var b in rbytes)
+                targetData.Add(b);
+
             decodedOnly += size;
             return VCDiffResult.SUCCESS;
         }

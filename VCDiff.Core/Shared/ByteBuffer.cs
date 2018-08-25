@@ -23,9 +23,9 @@ namespace MatthiWare.Compression.VCDiff.Shared
 {
     public class ByteBuffer : IByteBuffer, IDisposable
     {
-        byte[] bytes;
-        int length;
-        long offset;
+        private byte[] bytes;
+        private readonly int length;
+        private long offset;
 
         /// <summary>
         /// Basically a simple wrapper for byte[] arrays
@@ -46,7 +46,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override bool CanRead
+        public bool CanRead
         {
             get
             {
@@ -54,7 +54,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override long Position
+        public long Position
         {
             get
             {
@@ -67,27 +67,21 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override void BufferAll()
+        public void BufferAll()
         {
             //not implemented in this one
             //since it already contains the full buffered data
         }
 
-        public override long Length
-        {
-            get
-            {
-                return length;
-            }
-        }
+        public long Length => length;
 
-        public override byte PeekByte()
+        public byte PeekByte()
         {
-            if (offset >= length) throw new Exception("Trying to read past End of Buffer");
+            if (offset >= length) throw new IndexOutOfRangeException("Trying to read past End of Buffer");
             return this.bytes[offset];
         }
 
-        public override byte[] PeekBytes(int len)
+        public byte[] PeekBytes(int len)
         {
             int end = (int)offset + len > bytes.Length ? bytes.Length : (int)offset + len;
             int realLen = (int)offset + len > bytes.Length ? (int)bytes.Length - (int)offset : len;
@@ -102,13 +96,13 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return rbuff;
         }
 
-        public override byte ReadByte()
+        public byte ReadByte()
         {
-            if (offset >= length) throw new Exception("Trying to read past End of Buffer");
+            if (offset >= length) throw new IndexOutOfRangeException("Trying to read past End of Buffer");
             return this.bytes[offset++];
         }
 
-        public override byte[] ReadBytes(int len)
+        public byte[] ReadBytes(int len)
         {
             int end = (int)offset + len > bytes.Length ? bytes.Length : (int)offset + len;
             int realLen = (int)offset + len > bytes.Length ? (int)bytes.Length - (int)offset : len;
@@ -124,17 +118,17 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return rbuff;
         }
 
-        public override void Next()
+        public void Next()
         {
             offset++;
         }
 
-        public override void Skip(int len)
+        public void Skip(int len)
         {
             offset += len;
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             bytes = null;
         }

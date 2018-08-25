@@ -52,7 +52,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             {
                 if ((table.inst1[opcode] != CodeTable.N) && (table.inst2[opcode] != CodeTable.N))
                 {
-                    int found = this.LookFirstOpcode(table.inst1[opcode], table.size1[opcode], table.mode1[opcode]);
+                    int found = LookFirstOpcode(table.inst1[opcode], table.size1[opcode], table.mode1[opcode]);
                     if (found == CodeTable.kNoOpcode) continue;
                     secondMap.Add((byte)found, table.inst2[opcode], table.size2[opcode], table.mode2[opcode], (byte)opcode);
                 }

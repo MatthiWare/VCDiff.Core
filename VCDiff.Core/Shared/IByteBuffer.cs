@@ -21,30 +21,30 @@ using System;
 
 namespace MatthiWare.Compression.VCDiff.Shared
 {
-    public abstract class IByteBuffer : IDisposable
+    public interface IByteBuffer : IDisposable
     {
-        public abstract long Length
+        long Length
         {
             get;
         }
 
-        public abstract long Position
+        long Position
         {
             get; set;
         }
 
-        public abstract bool CanRead
+        bool CanRead
         {
             get;
         }
-        public abstract byte[] ReadBytes(int len);
-        public abstract byte ReadByte();
-        public abstract byte[] PeekBytes(int len);
-        public abstract byte PeekByte();
-        public abstract void Skip(int len);
-        public abstract void Next();
-        public abstract void BufferAll();
+        byte[] ReadBytes(int len);
+        byte ReadByte();
+        byte[] PeekBytes(int len);
+        byte PeekByte();
+        void Skip(int len);
+        void Next();
+        void BufferAll();
 
-        public abstract void Dispose();
+        void Dispose();
     }
 }

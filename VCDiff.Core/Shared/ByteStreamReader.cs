@@ -28,18 +28,18 @@ namespace MatthiWare.Compression.VCDiff.Shared
     //also has a helper function for reading all the bytes in at once
     public class ByteStreamReader : IByteBuffer, IDisposable
     {
-        Stream buffer;
-        int lastLenRead;
-        bool readAll;
-        List<byte> internalBuffer;
-        long offset;
+        private Stream buffer;
+        private int lastLenRead;
+        private bool readAll;
+        private IList<byte> internalBuffer;
+        private long offset;
 
         public ByteStreamReader(Stream stream)
         {
             buffer = stream;
         }
 
-        public override long Position
+        public long Position
         {
             get
             {
@@ -61,7 +61,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override long Length
+        public long Length
         {
             get
             {
@@ -77,7 +77,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override bool CanRead
+        public bool CanRead
         {
             get
             {
@@ -90,12 +90,12 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override void BufferAll()
+        public void BufferAll()
         {
             if (!readAll)
             {
                 offset = 0;
-                internalBuffer = new List<byte>();
+                internalBuffer = new List<byte>(16); // default gets initialized to 0 and when first item is added gets initialized to 4
                 readAll = true;
 
                 byte[] buff = new byte[1024 * 8];
@@ -114,7 +114,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public override byte[] PeekBytes(int len)
+        public byte[] PeekBytes(int len)
         {
             if (readAll)
             {
@@ -159,7 +159,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return new byte[0];
         }
 
-        public override byte ReadByte()
+        public byte ReadByte()
         {
             if (!CanRead) throw new Exception("Trying to read past end of buffer");
             if (readAll)
@@ -172,7 +172,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return 0;
         }
 
-        public override byte[] ReadBytes(int len)
+        public byte[] ReadBytes(int len)
         {
             if (readAll)
             {
@@ -213,7 +213,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return new byte[0];
         }
 
-        public override byte PeekByte()
+        public byte PeekByte()
         {
             if (!CanRead) throw new Exception("Trying to read past end of buffer");
             if (readAll)
@@ -227,17 +227,17 @@ namespace MatthiWare.Compression.VCDiff.Shared
         }
 
         //increases the offset by 1
-        public override void Next()
+        public void Next()
         {
             buffer.Position++;
         }
 
-        public override void Skip(int len)
+        public void Skip(int len)
         {
             buffer.Position += len;
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             buffer.Dispose();
         }

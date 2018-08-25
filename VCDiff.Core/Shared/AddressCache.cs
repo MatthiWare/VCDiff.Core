@@ -21,18 +21,19 @@ using MatthiWare.Compression.VCDiff.Includes;
 
 namespace MatthiWare.Compression.VCDiff.Shared
 {
+    /// <summary>
+    /// The address cache implementation as described in the RFC doc.
+    /// </summary>
     public class AddressCache
     {
-        /// <summary>
-        /// The address cache implementation as described in the RFC doc.
-        /// </summary>
-        const byte DefaultNearCacheSize = 4;
-        const byte DefaultSameCacheSize = 3;
-        byte nearSize;
-        byte sameSize;
-        long[] nearCache;
-        long[] sameCache;
-        int nextSlot;
+
+        private const byte DefaultNearCacheSize = 4;
+        private const byte DefaultSameCacheSize = 3;
+        private byte nearSize;
+        private byte sameSize;
+        private long[] nearCache;
+        private long[] sameCache;
+        private int nextSlot;
 
         public byte NearSize
         {

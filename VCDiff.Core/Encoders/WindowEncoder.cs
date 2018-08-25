@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MatthiWare.Compression.VCDiff.Includes;
 using MatthiWare.Compression.VCDiff.Shared;
 
@@ -26,19 +27,19 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 {
     public class WindowEncoder
     {
-        bool interleaved;
-        int maxMode;
-        long dictionarySize;
-        long targetLength;
-        CodeTable table;
-        int lastOpcodeIndex;
-        AddressCache addrCache;
-        InstructionMap instrMap;
-        List<byte> instructionAndSizes;
-        List<byte> dataForAddAndRun;
-        List<byte> addressForCopy;
-        bool hasChecksum;
-        uint checksum;
+        private bool interleaved;
+        private int maxMode;
+        private long dictionarySize;
+        private long targetLength;
+        private CodeTable table;
+        private int lastOpcodeIndex;
+        private AddressCache addrCache;
+        private InstructionMap instrMap;
+        private IList<byte> instructionAndSizes;
+        private IList<byte> dataForAddAndRun;
+        private IList<byte> addressForCopy;
+        private bool hasChecksum;
+        private uint checksum;
 
         public bool HasChecksum
         {
@@ -155,7 +156,10 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         public void Add(byte[] data)
         {
             EncodeInstruction(VCDiffInstructionType.ADD, data.Length);
-            dataForAddAndRun.AddRange(data);
+
+            foreach (var b in data)
+                dataForAddAndRun.Add(b);
+
             targetLength += data.Length;
         }
 

@@ -24,9 +24,9 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 {
     public class InstructionDecoder
     {
-        CodeTable table;
-        ByteBuffer source;
-        int pendingSecond;
+        private CodeTable table;
+        private ByteBuffer source;
+        private int pendingSecond;
 
         /// <summary>
         /// Decodes the incoming instruction from the buffer

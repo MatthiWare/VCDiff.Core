@@ -25,11 +25,11 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 {
     public class VCCoder
     {
-        IByteBuffer oldData;
-        IByteBuffer newData;
-        ByteStreamWriter sout;
-        RollingHash hasher;
-        int bufferSize;
+        private IByteBuffer oldData;
+        private IByteBuffer newData;
+        private ByteStreamWriter sout;
+        private RollingHash hasher;
+        private int bufferSize;
 
         static byte[] MagicBytes = new byte[] { 0xD6, 0xC3, 0xC4, 0x00, 0x00 };
         static byte[] MagicBytesExtended = new byte[] { 0xD6, 0xC3, 0xC4, (byte)'S', 0x00 };
@@ -110,7 +110,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 }
 
                 //just in case
-                System.GC.Collect();
+                // System.GC.Collect();
             }
 
             return result;

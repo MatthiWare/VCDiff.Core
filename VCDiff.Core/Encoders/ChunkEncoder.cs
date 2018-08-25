@@ -81,7 +81,6 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 checksum = Checksum.ComputeAdler32(bytes);
 
                 bytes = null;
-                System.GC.Collect();
             }
 
             windowEncoder = new WindowEncoder(oldData.Length, checksum, this.interleaved, hasChecksum);
