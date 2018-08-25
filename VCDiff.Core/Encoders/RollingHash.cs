@@ -1,8 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
 namespace VCDiff.Encoders
 {
@@ -24,12 +37,12 @@ namespace VCDiff.Encoders
             this.size = size;
             removeTable = new ulong[256];
             multiplier = 1;
-            for(int i = 0; i < size - 1; ++i)
+            for (int i = 0; i < size - 1; ++i)
             {
                 multiplier = ModBase(multiplier * kMult);
             }
             ulong byteTimes = 0;
-            for(int i = 0; i < 256; ++i)
+            for (int i = 0; i < 256; ++i)
             {
                 removeTable[i] = FindModBaseInverse(byteTimes);
                 byteTimes = ModBase(byteTimes + multiplier);
@@ -89,7 +102,7 @@ namespace VCDiff.Encoders
         public ulong Hash(byte[] bytes)
         {
             ulong h = HashFirstTwoBytes(bytes);
-            for(int i = 2; i < bytes.Length; i++)
+            for (int i = 2; i < bytes.Length; i++)
             {
                 h = HashStep(h, bytes[i]);
             }

@@ -1,8 +1,24 @@
-﻿using System;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace VCDiff.Shared
@@ -27,7 +43,7 @@ namespace VCDiff.Shared
         {
             get
             {
-                if(readAll)
+                if (readAll)
                 {
                     return offset;
                 }
@@ -35,12 +51,12 @@ namespace VCDiff.Shared
             }
             set
             {
-                if(readAll)
+                if (readAll)
                 {
-                    if(value >= 0)
+                    if (value >= 0)
                         offset = value;
                 }
-                if(buffer.CanRead && value >= 0)
+                if (buffer.CanRead && value >= 0)
                     buffer.Position = value;
             }
         }
@@ -49,7 +65,7 @@ namespace VCDiff.Shared
         {
             get
             {
-                if(readAll)
+                if (readAll)
                 {
                     return internalBuffer.Count;
                 }
@@ -100,15 +116,15 @@ namespace VCDiff.Shared
 
         public override byte[] PeekBytes(int len)
         {
-            if(readAll)
+            if (readAll)
             {
-                
+
                 int end = (int)offset + len > internalBuffer.Count ? internalBuffer.Count : (int)offset + len;
                 int realLen = (int)offset + len > internalBuffer.Count ? (int)internalBuffer.Count - (int)offset : len;
 
                 byte[] rbuff = new byte[realLen];
                 int rcc = 0;
-                for(int i = (int)offset; i < end; i++)
+                for (int i = (int)offset; i < end; i++)
                 {
                     rbuff[rcc] = internalBuffer[i];
                     rcc++;
@@ -146,7 +162,7 @@ namespace VCDiff.Shared
         public override byte ReadByte()
         {
             if (!CanRead) throw new Exception("Trying to read past end of buffer");
-            if(readAll)
+            if (readAll)
             {
                 return internalBuffer[(int)offset++];
             }
@@ -178,15 +194,15 @@ namespace VCDiff.Shared
 
             int actualRead = buffer.Read(buf, 0, len);
             lastLenRead = actualRead;
-            if(actualRead > 0)
+            if (actualRead > 0)
             {
-                if(actualRead == len)
+                if (actualRead == len)
                 {
                     return buf;
                 }
 
                 byte[] actualData = new byte[actualRead];
-                for(int i = 0; i < actualRead; i++)
+                for (int i = 0; i < actualRead; i++)
                 {
                     actualData[i] = buf[i];
                 }
@@ -200,7 +216,7 @@ namespace VCDiff.Shared
         public override byte PeekByte()
         {
             if (!CanRead) throw new Exception("Trying to read past end of buffer");
-            if(readAll)
+            if (readAll)
             {
                 return internalBuffer[(int)offset];
             }

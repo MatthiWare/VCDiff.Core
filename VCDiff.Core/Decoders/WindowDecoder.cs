@@ -1,10 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VCDiff.Shared;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 using VCDiff.Includes;
+using VCDiff.Shared;
 
 namespace VCDiff.Decoders
 {
@@ -183,53 +197,53 @@ namespace VCDiff.Decoders
 
             success = ParseWindowIndicatorAndSegment(dictionarySize, 0, false, out winIndicator, out sourceLength, out sourcePosition);
 
-            if(!success)
+            if (!success)
             {
                 return false;
             }
 
             success = ParseWindowLengths(out targetLength);
 
-            if(!success)
+            if (!success)
             {
                 return false;
             }
 
             success = ParseDeltaIndicator();
 
-            if(!success)
+            if (!success)
             {
                 return false;
             }
 
             hasChecksum = false;
-            if((winIndicator & (int)VCDiffWindowFlags.VCDCHECKSUM) != 0 && googleVersion)
+            if ((winIndicator & (int)VCDiffWindowFlags.VCDCHECKSUM) != 0 && googleVersion)
             {
                 hasChecksum = true;
             }
 
             success = ParseSectionLengths(hasChecksum, out addRunLength, out instructionAndSizesLength, out addressForCopyLength, out checksum);
 
-            if(!success)
+            if (!success)
             {
                 return false;
             }
 
-            if(googleVersion && addRunLength == 0 && addressForCopyLength == 0 && instructionAndSizesLength > 0)
+            if (googleVersion && addRunLength == 0 && addressForCopyLength == 0 && instructionAndSizesLength > 0)
             {
                 //interleave format
                 return true;
-            }       
+            }
 
             if (buffer.CanRead)
             {
                 addRun = buffer.ReadBytes((int)addRunLength);
             }
-            if(buffer.CanRead)
+            if (buffer.CanRead)
             {
                 instructionAndSizes = buffer.ReadBytes((int)instructionAndSizesLength);
             }
-            if(buffer.CanRead)
+            if (buffer.CanRead)
             {
                 addressesForCopy = buffer.ReadBytes((int)addressForCopyLength);
             }
@@ -239,12 +253,12 @@ namespace VCDiff.Decoders
 
         bool ParseByte(out byte value)
         {
-            if((int)VCDiffResult.SUCCESS != returnCode)
+            if ((int)VCDiffResult.SUCCESS != returnCode)
             {
                 value = 0;
                 return false;
             }
-            if(chunk.IsEmpty)
+            if (chunk.IsEmpty)
             {
                 value = 0;
                 returnCode = (int)VCDiffResult.EOD;
@@ -270,7 +284,7 @@ namespace VCDiff.Decoders
             }
 
             int parsed = VarIntBE.ParseInt32(buffer);
-            switch(parsed)
+            switch (parsed)
             {
                 case (int)VCDiffResult.ERRROR:
                     value = 0;
@@ -312,7 +326,7 @@ namespace VCDiff.Decoders
                 default:
                     break;
             }
-            if(parsed > 0xFFFFFFFF)
+            if (parsed > 0xFFFFFFFF)
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 value = 0;
@@ -326,14 +340,14 @@ namespace VCDiff.Decoders
         bool ParseSourceSegmentLengthAndPosition(long from, out long sourceLength, out long sourcePosition)
         {
             int outLength;
-            if(!ParseInt32(out outLength))
+            if (!ParseInt32(out outLength))
             {
                 sourceLength = 0;
                 sourcePosition = 0;
                 return false;
             }
             sourceLength = outLength;
-            if(sourceLength > from)
+            if (sourceLength > from)
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 sourceLength = 0;
@@ -341,14 +355,14 @@ namespace VCDiff.Decoders
                 return false;
             }
             int outPos;
-            if(!ParseInt32(out outPos))
+            if (!ParseInt32(out outPos))
             {
                 sourcePosition = 0;
                 sourceLength = 0;
                 return false;
             }
             sourcePosition = outPos;
-            if(sourcePosition > from)
+            if (sourcePosition > from)
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 sourceLength = 0;
@@ -357,7 +371,7 @@ namespace VCDiff.Decoders
             }
 
             long segmentEnd = sourcePosition + sourceLength;
-            if(segmentEnd > from)
+            if (segmentEnd > from)
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 sourceLength = 0;
@@ -370,7 +384,7 @@ namespace VCDiff.Decoders
 
         bool ParseWindowIndicatorAndSegment(long dictionarySize, long decodedTargetSize, bool allowVCDTarget, out byte winIndicator, out long sourceSegmentLength, out long sourceSegmentPosition)
         {
-            if(!ParseByte(out winIndicator))
+            if (!ParseByte(out winIndicator))
             {
                 winIndicator = 0;
                 sourceSegmentLength = 0;
@@ -380,12 +394,12 @@ namespace VCDiff.Decoders
 
             int sourceFlags = winIndicator & ((int)VCDiffWindowFlags.VCDSOURCE | (int)VCDiffWindowFlags.VCDTARGET);
 
-            switch(sourceFlags)
+            switch (sourceFlags)
             {
                 case (int)VCDiffWindowFlags.VCDSOURCE:
                     return ParseSourceSegmentLengthAndPosition(dictionarySize, out sourceSegmentLength, out sourceSegmentPosition);
                 case (int)VCDiffWindowFlags.VCDTARGET:
-                    if(!allowVCDTarget)
+                    if (!allowVCDTarget)
                     {
                         winIndicator = 0;
                         sourceSegmentLength = 0;
@@ -410,7 +424,7 @@ namespace VCDiff.Decoders
         bool ParseWindowLengths(out long targetWindowLength)
         {
             int deltaLength;
-            if(!ParseInt32(out deltaLength))
+            if (!ParseInt32(out deltaLength))
             {
                 targetWindowLength = 0;
                 return false;
@@ -419,7 +433,7 @@ namespace VCDiff.Decoders
 
             deltaEncodingStart = chunk.ParsedSize;
             int outTargetLength;
-            if(!ParseInt32(out outTargetLength))
+            if (!ParseInt32(out outTargetLength))
             {
                 targetWindowLength = 0;
                 return false;
@@ -430,17 +444,17 @@ namespace VCDiff.Decoders
 
         bool ParseDeltaIndicator()
         {
-            if(!ParseByte(out deltaIndicator))
+            if (!ParseByte(out deltaIndicator))
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 return false;
             }
-            if((deltaIndicator & ((int)VCDiffCompressFlags.VCDDATACOMP | (int)VCDiffCompressFlags.VCDINSTCOMP | (int)VCDiffCompressFlags.VCDADDRCOMP)) > 0)
+            if ((deltaIndicator & ((int)VCDiffCompressFlags.VCDDATACOMP | (int)VCDiffCompressFlags.VCDINSTCOMP | (int)VCDiffCompressFlags.VCDADDRCOMP)) > 0)
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 return false;
             }
-            return true; 
+            return true;
         }
 
 
@@ -454,7 +468,7 @@ namespace VCDiff.Decoders
             ParseInt32(out outAddress);
             checksum = 0;
 
-            if(hasChecksum)
+            if (hasChecksum)
             {
                 ParseUInt32(out checksum);
             }
@@ -463,7 +477,7 @@ namespace VCDiff.Decoders
             addressLength = outAddress;
             instructionsLength = outInstruct;
 
-            if(returnCode != (int)VCDiffResult.SUCCESS)
+            if (returnCode != (int)VCDiffResult.SUCCESS)
             {
                 return false;
             }
@@ -471,7 +485,7 @@ namespace VCDiff.Decoders
             long deltaHeaderLength = chunk.ParsedSize - deltaEncodingStart;
             long totalLen = deltaHeaderLength + addRunLength + instructionsLength + addressLength;
 
-            if(deltaEncodingLength != totalLen)
+            if (deltaEncodingLength != totalLen)
             {
                 returnCode = (int)VCDiffResult.ERRROR;
                 return false;
@@ -534,11 +548,11 @@ namespace VCDiff.Decoders
                 }
                 set
                 {
-                    if(position < start)
+                    if (position < start)
                     {
                         return;
                     }
-                    if(position > end)
+                    if (position > end)
                     {
                         return;
                     }

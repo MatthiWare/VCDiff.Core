@@ -1,8 +1,23 @@
-﻿using System;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VCDiff.Includes;
 
 namespace VCDiff.Shared
@@ -42,7 +57,7 @@ namespace VCDiff.Shared
         public static long ParseInt64(IByteBuffer sin)
         {
             long result = 0;
-            while(sin.CanRead)
+            while (sin.CanRead)
             {
                 result += (long)(sin.PeekByte() & 0x7F);
                 if ((sin.PeekByte() & 0x80) == 0)
@@ -62,7 +77,7 @@ namespace VCDiff.Shared
 
         public static int CalcInt32Length(int v)
         {
-            if(v < 0)
+            if (v < 0)
             {
                 return 0;
             }
@@ -119,7 +134,7 @@ namespace VCDiff.Shared
             byte[] varint = new byte[int64Max];
             int length = EncodeInt64(v, varint);
             int start = int64Max - length;
-            for(int i = start; i < int64Max; i++)
+            for (int i = start; i < int64Max; i++)
             {
                 sout.writeByte(varint[i]);
             }
@@ -131,7 +146,7 @@ namespace VCDiff.Shared
             byte[] varint = new byte[int64Max];
             int length = EncodeInt64(v, varint);
             int start = int64Max - length;
-            for(int i = start; i < int64Max; i++)
+            for (int i = start; i < int64Max; i++)
             {
                 buffer.Add(varint[i]);
             }
@@ -143,7 +158,7 @@ namespace VCDiff.Shared
         //the buffer must be of size: int32Max
         public static int EncodeInt32(int v, byte[] sout)
         {
-            if(v < 0)
+            if (v < 0)
             {
                 return 0;
             }
@@ -153,7 +168,7 @@ namespace VCDiff.Shared
             sout[idx] = (byte)(v & 0x7F);
             --idx;
             v >>= 7;
-            while(v > 0)
+            while (v > 0)
             {
                 sout[idx] = (byte)((v & 0x7F) | 0x80);
                 --idx;
@@ -163,7 +178,7 @@ namespace VCDiff.Shared
 
             return length;
         }
-        
+
         //v cannot be negative!
         //the buffer must be of size: int64Max
         public static int EncodeInt64(long v, byte[] sout)
@@ -187,6 +202,6 @@ namespace VCDiff.Shared
             }
 
             return length;
-        }      
+        }
     }
 }

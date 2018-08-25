@@ -1,11 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
 namespace VCDiff.Shared
-{ 
+{
     public class Adler32
     {
         /// <summary>
@@ -43,29 +56,29 @@ namespace VCDiff.Shared
             sum2 = (adler >> 16) & 0xffff;
             adler &= 0xffff;
 
-            if(buff.Length == 1)
+            if (buff.Length == 1)
             {
                 adler += buff[0];
-                if(adler >= BASE)
+                if (adler >= BASE)
                 {
                     adler -= BASE;
                 }
                 sum2 += adler;
-                if(sum2 >= BASE)
+                if (sum2 >= BASE)
                 {
                     sum2 -= BASE;
                 }
                 return adler | (sum2 << 16);
             }
 
-            if(buff.Length < 16)
+            if (buff.Length < 16)
             {
-                for(int i = 0; i < buff.Length; i++)
+                for (int i = 0; i < buff.Length; i++)
                 {
                     adler += buff[i];
                     sum2 += adler;
                 }
-                if(adler >= BASE)
+                if (adler >= BASE)
                 {
                     adler -= BASE;
                 }
@@ -75,7 +88,7 @@ namespace VCDiff.Shared
 
             uint len = (uint)buff.Length;
             int dof = 0;
-            while(len >= NMAX)
+            while (len >= NMAX)
             {
                 len -= NMAX;
                 n = NMAX / 16;
@@ -88,15 +101,15 @@ namespace VCDiff.Shared
                 sum2 %= BASE;
             }
 
-            if(len > 0)
+            if (len > 0)
             {
-                while(len >= 16)
+                while (len >= 16)
                 {
                     len -= 16;
                     DO16(adler, sum2, buff, dof, out adler, out sum2);
                     dof += 16;
                 }
-                while(len-- > 0)
+                while (len-- > 0)
                 {
                     adler += buff[dof++];
                     sum2 += adler;
@@ -123,7 +136,7 @@ namespace VCDiff.Shared
         static void DO4(uint adler, uint sum, byte[] buff, int i, out uint ald, out uint s)
         {
             DO2(adler, sum, buff, i, out ald, out s);
-            DO2(ald, s, buff, i+2, out ald, out s);
+            DO2(ald, s, buff, i + 2, out ald, out s);
         }
         static void DO8(uint adler, uint sum, byte[] buff, int i, out uint ald, out uint s)
         {

@@ -1,8 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+using System;
 using VCDiff.Shared;
 
 namespace VCDiff.Encoders
@@ -64,7 +79,7 @@ namespace VCDiff.Encoders
             this.offset = offset;
             tableSize = CalcTableSize();
 
-            if(tableSize == 0)
+            if (tableSize == 0)
             {
                 throw new Exception("BlockHash Table Size is Invalid == 0");
             }
@@ -79,12 +94,12 @@ namespace VCDiff.Encoders
 
         void SetTablesToInvalid()
         {
-            for(int i = 0; i < nextBlockTable.Length; i++)
+            for (int i = 0; i < nextBlockTable.Length; i++)
             {
                 lastBlockTable[i] = -1;
                 nextBlockTable[i] = -1;
             }
-            for(int i = 0; i < hashTable.Length; i++)
+            for (int i = 0; i < hashTable.Length; i++)
             {
                 hashTable[i] = -1;
             }
@@ -95,22 +110,23 @@ namespace VCDiff.Encoders
             long min = (sourceData.Length / sizeof(int)) + 1;
             long size = 1;
 
-            while(size < min)
+            while (size < min)
             {
                 size <<= 1;
 
-                if(size <= 0)
+                if (size <= 0)
                 {
                     return 0;
                 }
             }
 
-            if((size & (size - 1)) != 0)
+            if ((size & (size - 1)) != 0)
             {
                 return 0;
             }
 
-            if((sourceData.Length > 0) && (size > (min * 2))) {
+            if ((sourceData.Length > 0) && (size > (min * 2)))
+            {
                 return 0;
             }
             return size;
@@ -118,7 +134,7 @@ namespace VCDiff.Encoders
 
         public void AddOneIndexHash(int index, ulong hash)
         {
-            if(index == NextIndexToAdd)
+            if (index == NextIndexToAdd)
             {
                 AddBlock(hash);
             }
@@ -134,18 +150,18 @@ namespace VCDiff.Encoders
 
         public void AddAllBlocksThroughIndex(long index)
         {
-            if(index > sourceData.Length)
+            if (index > sourceData.Length)
             {
                 return;
             }
 
             long lastAdded = lastBlockAdded * blockSize;
-            if(index <= lastAdded)
+            if (index <= lastAdded)
             {
                 return;
             }
 
-            if(sourceData.Length < blockSize)
+            if (sourceData.Length < blockSize)
             {
                 return;
             }
@@ -153,7 +169,7 @@ namespace VCDiff.Encoders
             long endLimit = index;
             long lastLegalHashIndex = (sourceData.Length - blockSize);
 
-            if(endLimit > lastLegalHashIndex)
+            if (endLimit > lastLegalHashIndex)
             {
                 endLimit = lastLegalHashIndex + 1;
             }
@@ -161,9 +177,9 @@ namespace VCDiff.Encoders
             long offset = sourceData.Position + NextIndexToAdd;
             long end = sourceData.Position + endLimit;
             sourceData.Position = offset;
-            while(offset < end)
+            while (offset < end)
             {
-                AddBlock(hasher.Hash(sourceData.ReadBytes(blockSize)));   
+                AddBlock(hasher.Hash(sourceData.ReadBytes(blockSize)));
                 offset += blockSize;
             }
         }
@@ -203,8 +219,8 @@ namespace VCDiff.Encoders
         {
             int matchCounter = 0;
 
-            for (long blockNumber = FirstMatchingBlock(hash, candidateStart, target); 
-                blockNumber >= 0 && !TooManyMatches(ref matchCounter); 
+            for (long blockNumber = FirstMatchingBlock(hash, candidateStart, target);
+                blockNumber >= 0 && !TooManyMatches(ref matchCounter);
                 blockNumber = NextMatchingBlock(blockNumber, candidateStart, target))
             {
                 long sourceMatchOffset = blockNumber * blockSize;
@@ -237,19 +253,19 @@ namespace VCDiff.Encoders
         {
             long blockNumber = lastBlockAdded + 1;
             long totalBlocks = BlocksCount;
-            if(blockNumber >= totalBlocks)
+            if (blockNumber >= totalBlocks)
             {
                 return;
             }
 
-            if(nextBlockTable[blockNumber] != -1)
+            if (nextBlockTable[blockNumber] != -1)
             {
                 return;
             }
 
             long tableIndex = GetTableIndex(hash);
             long firstMatching = hashTable[tableIndex];
-            if(firstMatching < 0)
+            if (firstMatching < 0)
             {
                 hashTable[tableIndex] = blockNumber;
                 lastBlockTable[blockNumber] = blockNumber;
@@ -257,7 +273,7 @@ namespace VCDiff.Encoders
             else
             {
                 long lastMatching = lastBlockTable[firstMatching];
-                if(nextBlockTable[lastMatching] != -1)
+                if (nextBlockTable[lastMatching] != -1)
                 {
                     return;
                 }
@@ -283,7 +299,7 @@ namespace VCDiff.Encoders
             if (!target.CanRead) return false;
             byte rb = target.ReadByte();
 
-            if(lb != rb)
+            if (lb != rb)
             {
                 return false;
             }
@@ -304,19 +320,19 @@ namespace VCDiff.Encoders
 
             while (i < blockSize)
             {
-                if (i + offset1 >= srcLength ||  i + offset2 >= trgLength)
+                if (i + offset1 >= srcLength || i + offset2 >= trgLength)
                 {
                     return false;
                 }
                 byte lb = sourceData.ReadByte();
                 byte rb = target.ReadByte();
-                if(lb != rb)
+                if (lb != rb)
                 {
                     return false;
                 }
                 i++;
             }
-           
+
             return true;
         }
 
@@ -328,7 +344,7 @@ namespace VCDiff.Encoders
 
         public long NextMatchingBlock(long blockNumber, long toffset, IByteBuffer target)
         {
-            if(blockNumber >= BlocksCount)
+            if (blockNumber >= BlocksCount)
             {
                 return -1;
             }
@@ -341,7 +357,7 @@ namespace VCDiff.Encoders
             int probes = 0;
             while ((blockNumber >= 0) && !BlockContentsMatch(blockNumber, toffset, target))
             {
-                if(++probes > maxProbes)
+                if (++probes > maxProbes)
                 {
                     return -1;
                 }
@@ -355,8 +371,8 @@ namespace VCDiff.Encoders
             long bytesFound = 0;
             long sindex = start;
             long tindex = tstart;
-   
-            while(bytesFound < maxBytes)
+
+            while (bytesFound < maxBytes)
             {
                 --sindex;
                 --tindex;
@@ -411,7 +427,7 @@ namespace VCDiff.Encoders
 
             public void ReplaceIfBetterMatch(long csize, long sourcOffset, long targetOffset)
             {
-                if(csize > size)
+                if (csize > size)
                 {
                     size = csize;
                     sOffset = sourcOffset;

@@ -1,9 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VCDiff.Shared;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 using VCDiff.Includes;
 
 namespace VCDiff.Shared
@@ -68,7 +81,7 @@ namespace VCDiff.Shared
                 return (byte)(VCDiffModes.FIRST + DefaultNearCacheSize + DefaultSameCacheSize - 1);
             }
         }
-        
+
         public AddressCache(byte nearSize, byte sameSize)
         {
             this.sameSize = sameSize;
@@ -85,7 +98,7 @@ namespace VCDiff.Shared
             this.nearCache = new long[nearSize];
             this.sameCache = new long[sameSize * 256];
             nextSlot = 0;
-        } 
+        }
 
         static bool IsSelfMode(byte mode)
         {
@@ -135,7 +148,7 @@ namespace VCDiff.Shared
         long NearAddress(int pos)
         {
             return nearCache[pos];
-        } 
+        }
 
         long SameAddress(int pos)
         {
@@ -144,12 +157,12 @@ namespace VCDiff.Shared
 
         void UpdateCache(long address)
         {
-            if(nearSize > 0)
+            if (nearSize > 0)
             {
                 nearCache[nextSlot] = address;
                 nextSlot = (nextSlot + 1) % nearSize;
             }
-            if(sameSize > 0)
+            if (sameSize > 0)
             {
                 sameCache[(int)(address % (sameSize * 256))] = address;
             }
@@ -157,21 +170,21 @@ namespace VCDiff.Shared
 
         public byte EncodeAddress(long address, long here, out long encoded)
         {
-            if(address < 0)
+            if (address < 0)
             {
                 encoded = 0;
                 return (byte)0;
             }
-            if(address >= here)
+            if (address >= here)
             {
                 encoded = 0;
                 return (byte)0;
             }
 
-            if(sameSize > 0)
+            if (sameSize > 0)
             {
                 int pos = (int)(address % (sameSize * 256));
-                if(SameAddress(pos) == address)
+                if (SameAddress(pos) == address)
                 {
                     UpdateCache(address);
                     encoded = (pos % 256);
@@ -183,16 +196,16 @@ namespace VCDiff.Shared
             long bestEncoded = address;
 
             long hereEncoded = here - address;
-            if(hereEncoded < bestEncoded)
+            if (hereEncoded < bestEncoded)
             {
                 bestMode = (byte)VCDiffModes.HERE;
                 bestEncoded = hereEncoded;
             }
 
-            for(int i = 0; i < nearSize; ++i)
+            for (int i = 0; i < nearSize; ++i)
             {
                 long nearEncoded = address - NearAddress(i);
-                if((nearEncoded >= 0) && (nearEncoded < bestEncoded))
+                if ((nearEncoded >= 0) && (nearEncoded < bestEncoded))
                 {
                     bestMode = (byte)(FirstNear + i);
                     bestEncoded = nearEncoded;
@@ -206,11 +219,11 @@ namespace VCDiff.Shared
 
         bool IsDecodedAddressValid(long decoded, long here)
         {
-            if(decoded < 0)
+            if (decoded < 0)
             {
                 return false;
             }
-            else if(decoded >= here)
+            else if (decoded >= here)
             {
                 return false;
             }
@@ -221,18 +234,18 @@ namespace VCDiff.Shared
         public long DecodeAddress(long here, byte mode, ByteBuffer sin)
         {
             long start = sin.Position;
-            if(here < 0)
+            if (here < 0)
             {
                 return (int)VCDiffResult.ERRROR;
             }
 
-            if(!sin.CanRead)
+            if (!sin.CanRead)
             {
                 return (int)VCDiffResult.EOD;
             }
 
             long decoded = 0;
-            if(IsSameMode(mode))
+            if (IsSameMode(mode))
             {
                 byte encoded = sin.ReadByte();
                 decoded = DecodeSameAddress(mode, encoded);
@@ -241,7 +254,7 @@ namespace VCDiff.Shared
             {
                 int encoded = VarIntBE.ParseInt32(sin);
 
-                switch(encoded)
+                switch (encoded)
                 {
                     case (int)VCDiffResult.ERRROR:
                         return encoded;
@@ -252,15 +265,15 @@ namespace VCDiff.Shared
                         break;
                 }
 
-                if(IsSelfMode(mode))
+                if (IsSelfMode(mode))
                 {
                     decoded = DecodeSelfAddress(encoded);
                 }
-                else if(IsHereMode(mode))
+                else if (IsHereMode(mode))
                 {
                     decoded = DecodeHereAddress(encoded, here);
                 }
-                else if(IsNearMode(mode))
+                else if (IsNearMode(mode))
                 {
                     decoded = DecodeNearAddress(mode, encoded);
                 }
@@ -270,7 +283,7 @@ namespace VCDiff.Shared
                 }
             }
 
-            if(!IsDecodedAddressValid(decoded, here))
+            if (!IsDecodedAddressValid(decoded, here))
             {
                 return (int)VCDiffResult.ERRROR;
             }

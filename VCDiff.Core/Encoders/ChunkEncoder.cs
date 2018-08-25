@@ -1,9 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VCDiff.Includes;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+using System;
 using VCDiff.Shared;
 
 namespace VCDiff.Encoders
@@ -60,7 +74,7 @@ namespace VCDiff.Encoders
 
             ///If checksum needed
             ///Generate Adler32 checksum for the incoming bytes
-            if(hasChecksum)
+            if (hasChecksum)
             {
                 newData.Position = 0;
                 byte[] bytes = newData.ReadBytes((int)newData.Length);
@@ -165,15 +179,15 @@ namespace VCDiff.Encoders
 
         public void Dispose()
         {
-            if(oldData != null)
+            if (oldData != null)
             {
                 oldData.Dispose();
             }
-            if(newData != null)
+            if (newData != null)
             {
                 newData.Dispose();
             }
-            if(windowEncoder != null)
+            if (windowEncoder != null)
             {
                 windowEncoder = null;
             }

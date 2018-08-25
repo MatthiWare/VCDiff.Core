@@ -1,11 +1,26 @@
-﻿using System;
+﻿/* LICENSE
+
+   Copyright 2008 The open-vcdiff Authors.
+   Copyright 2017 Metric (https://github.com/Metric)
+   Copyright 2018 MatthiWare (https://github.com/Matthiee)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VCDiff.Shared;
 using VCDiff.Includes;
-using System.IO;
+using VCDiff.Shared;
 
 namespace VCDiff.Decoders
 {
@@ -21,7 +36,9 @@ namespace VCDiff.Decoders
         List<byte> targetData;
         CustomCodeTableDecoder customTable;
 
-        //the total bytes decoded
+        /// <summary>
+        /// Total bytes decoded
+        /// </summary>
         public long Decoded
         {
             get
@@ -45,7 +62,7 @@ namespace VCDiff.Decoders
                 this.customTable = customTable;
                 addressCache = new AddressCache((byte)customTable.NearSize, (byte)customTable.SameSize);
             }
-            else 
+            else
             {
                 addressCache = new AddressCache();
             }
@@ -61,7 +78,7 @@ namespace VCDiff.Decoders
         /// </summary>
         /// <returns></returns>
         public VCDiffResult DecodeInterleave()
-        { 
+        {
             VCDiffResult result = VCDiffResult.SUCCESS;
             //since interleave expected then the last point that was most likely decoded was the lengths section
             //so following is all data for the add run copy etc
@@ -73,7 +90,8 @@ namespace VCDiff.Decoders
 
             while (interleaveLength > 0)
             {
-                if (target.CanRead) {
+                if (target.CanRead)
+                {
                     //read in 
                     didBreakBeforeComplete = false;
 
@@ -86,7 +104,7 @@ namespace VCDiff.Decoders
 
                     InstructionDecoder instrDecoder = new InstructionDecoder(incoming, this.customTable);
 
-                    while(incoming.CanRead && decodedOnly < window.DecodedDeltaLength)
+                    while (incoming.CanRead && decodedOnly < window.DecodedDeltaLength)
                     {
                         int decodedSize = 0;
                         byte mode = 0;
@@ -95,9 +113,10 @@ namespace VCDiff.Decoders
                         if (lastDecodedSize > 0 && lastDecodedInstruction != VCDiffInstructionType.NOOP)
                         {
                             decodedSize = lastDecodedSize;
-                            instruction = lastDecodedInstruction;                   
+                            instruction = lastDecodedInstruction;
                         }
-                        else {
+                        else
+                        {
                             instruction = instrDecoder.Next(out decodedSize, out mode);
 
                             switch (instruction)
@@ -168,7 +187,7 @@ namespace VCDiff.Decoders
                         lastDecodedSize = 0;
                     }
 
-                    if(!didBreakBeforeComplete)
+                    if (!didBreakBeforeComplete)
                     {
                         interleaveLength -= initialLength;
                     }
@@ -210,7 +229,7 @@ namespace VCDiff.Decoders
 
                 VCDiffInstructionType instruction = instrDecoder.Next(out decodedSize, out mode);
 
-                switch(instruction)
+                switch (instruction)
                 {
                     case VCDiffInstructionType.EOD:
                         targetData.Clear();
@@ -222,7 +241,7 @@ namespace VCDiff.Decoders
                         break;
                 }
 
-                switch(instruction)
+                switch (instruction)
                 {
                     case VCDiffInstructionType.ADD:
                         result = DecodeAdd(decodedSize, addRunBuffer);
@@ -239,11 +258,11 @@ namespace VCDiff.Decoders
                 }
             }
 
-            if(window.HasChecksum)
+            if (window.HasChecksum)
             {
                 uint adler = Checksum.ComputeAdler32(targetData.ToArray());
 
-                if(adler != window.Checksum)
+                if (adler != window.Checksum)
                 {
                     result = VCDiffResult.ERRROR;
                 }
@@ -258,21 +277,21 @@ namespace VCDiff.Decoders
             long here = window.SourceLength + decodedOnly;
             long decoded = addressCache.DecodeAddress(here, mode, addresses);
 
-            switch((VCDiffResult)decoded)
+            switch ((VCDiffResult)decoded)
             {
                 case VCDiffResult.ERRROR:
                     return VCDiffResult.ERRROR;
                 case VCDiffResult.EOD:
                     return VCDiffResult.EOD;
                 default:
-                    if(decoded < 0 || decoded > here)
+                    if (decoded < 0 || decoded > here)
                     {
                         return VCDiffResult.ERRROR;
                     }
                     break;
             }
 
-            if(decoded + size <= window.SourceLength)
+            if (decoded + size <= window.SourceLength)
             {
                 dict.Position = decoded;
                 byte[] rbytes = dict.ReadBytes(size);
@@ -313,19 +332,19 @@ namespace VCDiff.Decoders
 
         VCDiffResult DecodeRun(int size, ByteBuffer addRun)
         {
-            if(addRun.Position + 1 > addRun.Length)
+            if (addRun.Position + 1 > addRun.Length)
             {
                 return VCDiffResult.EOD;
             }
 
-            if(!addRun.CanRead)
+            if (!addRun.CanRead)
             {
                 return VCDiffResult.EOD;
             }
 
             byte b = addRun.ReadByte();
 
-            for(int i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
                 sout.writeByte(b);
                 targetData.Add(b);
@@ -338,12 +357,12 @@ namespace VCDiff.Decoders
 
         VCDiffResult DecodeAdd(int size, ByteBuffer addRun)
         {
-            if(addRun.Position + size > addRun.Length)
+            if (addRun.Position + size > addRun.Length)
             {
                 return VCDiffResult.EOD;
             }
 
-            if(!addRun.CanRead)
+            if (!addRun.CanRead)
             {
                 return VCDiffResult.EOD;
             }
