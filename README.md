@@ -1,11 +1,15 @@
-# open-vcdiff C# implementation
+# Open-VCDiff .NET Core Implementation
 
-This is a full implementation of open-vcdiff in C# based on [Google's open-vcdiff](https://github.com/google/open-vcdiff). This is written entirely in C# - no external C++ libraries required. This includes proper SDHC support with interleaving and checksums. The only thing it does not support is encoding with a custom CodeTable currently. Will be added later if requested, or feel free to add it in and send a pull request.
+This is a full implementation of Open-VCDiff in C# based on [Google's open-vcdiff](https://github.com/google/open-vcdiff). This is written entirely in C# - no external C++ libraries required. This includes proper SDHC support with interleaving and checksums. 
 
-It is fully compatible with Google's open-vcdiff for encoding and decoding. If you find any bugs please let me know. I tried to test as thoroughly as possible between this and Google's github version. The largest file I tested with was 10MB. Should be able to support up to 2-4GB depending on your system.
+It is fully compatible with Google's Open-VCDiff for encoding and decoding. 
+
+Original work by [Metric](https://github.com/Metric)
+
+Original repo [Metric/VCDiff](https://github.com/Metric/VCDiff)
 
 ## Requirements
-Should be able to compile with any .Net platform greater than equal to 2.5. Mono should be able to compile it as well.
+.NET Standard 2.0+
 
 # Encoding Data
 The dictionary must be a file or data that is already in memory. The file must be fully read in first in order to encode properly. This is just how the algorithm works for VCDiff. The encode function is blocking.
@@ -131,4 +135,4 @@ while(bytesWritten < someSizeThatYouAreExpecting) {
 ```
 
 # Apache 2.0 License
-This is licensed under the same license as open-vcdiff by Google. See [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
+This is licensed under the same license as Open-VCDiff by Google. See [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).

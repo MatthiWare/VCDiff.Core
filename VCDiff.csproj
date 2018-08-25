@@ -1,31 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
-    <AssemblyTitle>vcdiff</AssemblyTitle>
-    <Company></Company>
-    <Product>vcdiff</Product>
-    <Description></Description>
-    <Copyright>Copyright ©  2017</Copyright>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyTitle>VCDiff.Core</AssemblyTitle>
+    <Company>MatthiWare</Company>
+    <Product>VCDiff.Core</Product>
+    <Description>Managed VCDiff implementation in .Net</Description>
+    <Copyright>Copyright © MatthiWare 2018</Copyright>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ProjectGuid>{4D676F4E-E66D-4A41-861F-600F0FFCD052}</ProjectGuid>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Net.Http" />
-  </ItemGroup>
 </Project>
