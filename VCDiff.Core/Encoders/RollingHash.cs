@@ -17,7 +17,7 @@
    limitations under the License.
 */
 
-namespace VCDiff.Encoders
+namespace MatthiWare.Compression.VCDiff.Encoders
 {
     public class RollingHash
     {

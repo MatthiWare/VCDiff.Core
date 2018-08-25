@@ -18,9 +18,9 @@
 */
 
 using System;
-using VCDiff.Shared;
+using MatthiWare.Compression.VCDiff.Shared;
 
-namespace VCDiff.Encoders
+namespace MatthiWare.Compression.VCDiff.Encoders
 {
     public class BlockHash
     {

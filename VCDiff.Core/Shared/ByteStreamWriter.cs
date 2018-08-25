@@ -20,7 +20,7 @@
 using System;
 using System.IO;
 
-namespace VCDiff.Shared
+namespace MatthiWare.Compression.VCDiff.Shared
 {
     public class ByteStreamWriter : IDisposable
     {

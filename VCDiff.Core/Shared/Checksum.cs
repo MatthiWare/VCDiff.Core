@@ -17,7 +17,7 @@
    limitations under the License.
 */
 
-namespace VCDiff.Shared
+namespace MatthiWare.Compression.VCDiff.Shared
 {
     public class Checksum
     {

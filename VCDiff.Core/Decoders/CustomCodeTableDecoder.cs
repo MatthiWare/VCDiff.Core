@@ -18,10 +18,10 @@
 */
 
 using System.IO;
-using VCDiff.Includes;
-using VCDiff.Shared;
+using MatthiWare.Compression.VCDiff.Includes;
+using MatthiWare.Compression.VCDiff.Shared;
 
-namespace VCDiff.Decoders
+namespace MatthiWare.Compression.VCDiff.Decoders
 {
     public class CustomCodeTableDecoder
     {

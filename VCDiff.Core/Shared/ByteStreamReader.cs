@@ -21,7 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace VCDiff.Shared
+namespace MatthiWare.Compression.VCDiff.Shared
 {
     //Wrapper Class for any stream that supports Position
     //and Length to make reading bytes easier

@@ -18,7 +18,7 @@
 */
 
 
-namespace VCDiff.Includes
+namespace MatthiWare.Compression.VCDiff.Includes
 {
     public enum VCDiffResult
     {

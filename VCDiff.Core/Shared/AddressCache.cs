@@ -17,9 +17,9 @@
    limitations under the License.
 */
 
-using VCDiff.Includes;
+using MatthiWare.Compression.VCDiff.Includes;
 
-namespace VCDiff.Shared
+namespace MatthiWare.Compression.VCDiff.Shared
 {
     public class AddressCache
     {

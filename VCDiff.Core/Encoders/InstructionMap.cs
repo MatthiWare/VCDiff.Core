@@ -17,10 +17,10 @@
    limitations under the License.
 */
 
-using VCDiff.Includes;
-using VCDiff.Shared;
+using MatthiWare.Compression.VCDiff.Includes;
+using MatthiWare.Compression.VCDiff.Shared;
 
-namespace VCDiff.Encoders
+namespace MatthiWare.Compression.VCDiff.Encoders
 {
     public class InstructionMap
     {

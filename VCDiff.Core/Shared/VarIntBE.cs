@@ -18,9 +18,9 @@
 */
 
 using System.Collections.Generic;
-using VCDiff.Includes;
+using MatthiWare.Compression.VCDiff.Includes;
 
-namespace VCDiff.Shared
+namespace MatthiWare.Compression.VCDiff.Shared
 {
     public class VarIntBE
     {

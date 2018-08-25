@@ -19,7 +19,7 @@
 
 using System;
 
-namespace VCDiff.Shared
+namespace MatthiWare.Compression.VCDiff.Shared
 {
     public abstract class IByteBuffer : IDisposable
     {
