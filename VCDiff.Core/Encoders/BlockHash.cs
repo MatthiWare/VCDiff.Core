@@ -49,21 +49,9 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         long tableSize = 0;
         RollingHash hasher;
 
-        public IByteBuffer Source
-        {
-            get
-            {
-                return sourceData;
-            }
-        }
+        public IByteBuffer Source => sourceData;
 
-        public long SourceSize
-        {
-            get
-            {
-                return sourceData.Length;
-            }
-        }
+        public long SourceSize => sourceData.Length;
 
         /// <summary>
         /// Create a hash lookup table for the data
@@ -140,13 +128,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             }
         }
 
-        public long NextIndexToAdd
-        {
-            get
-            {
-                return (lastBlockAdded + 1) * blockSize;
-            }
-        }
+        public long NextIndexToAdd => (lastBlockAdded + 1) * blockSize;
 
         public void AddAllBlocksThroughIndex(long index)
         {
@@ -184,21 +166,9 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             }
         }
 
-        public long BlocksCount
-        {
-            get
-            {
-                return sourceData.Length / blockSize;
-            }
-        }
+        public long BlocksCount => sourceData.Length / blockSize;
 
-        public long TableSize
-        {
-            get
-            {
-                return tableSize;
-            }
-        }
+        public long TableSize => tableSize;
 
         long GetTableIndex(ulong hash)
         {
@@ -435,29 +405,11 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 }
             }
 
-            public long Size
-            {
-                get
-                {
-                    return size;
-                }
-            }
+            public long Size => size;
 
-            public long SourceOffset
-            {
-                get
-                {
-                    return sOffset;
-                }
-            }
+            public long SourceOffset => sOffset;
 
-            public long TargetOffset
-            {
-                get
-                {
-                    return tOffset;
-                }
-            }
+            public long TargetOffset => tOffset;
         }
     }
 }

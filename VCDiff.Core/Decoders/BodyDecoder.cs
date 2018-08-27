@@ -40,13 +40,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         /// <summary>
         /// Total bytes decoded
         /// </summary>
-        public long Decoded
-        {
-            get
-            {
-                return decodedOnly;
-            }
-        }
+        public long Decoded => decodedOnly;
 
         /// <summary>
         /// The main decoder loop for the data

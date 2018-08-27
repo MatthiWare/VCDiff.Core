@@ -52,13 +52,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return new byte[0];
         }
 
-        public long Position
-        {
-            get
-            {
-                return buffer.Position;
-            }
-        }
+        public long Position => buffer.Position;
 
         public void writeByte(byte b)
         {

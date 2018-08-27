@@ -41,29 +41,11 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         private bool hasChecksum;
         private uint checksum;
 
-        public bool HasChecksum
-        {
-            get
-            {
-                return hasChecksum;
-            }
-        }
+        public bool HasChecksum => hasChecksum;
 
-        public bool IsInterleaved
-        {
-            get
-            {
-                return interleaved;
-            }
-        }
+        public bool IsInterleaved => interleaved;
 
-        public uint Checksum
-        {
-            get
-            {
-                return checksum;
-            }
-        }
+        public uint Checksum => checksum;
 
         //This is a window encoder for the VCDIFF format
         //if you are not including a checksum simply pass 0 to checksum

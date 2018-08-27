@@ -44,13 +44,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
         public const byte ERR = (byte)VCDiffInstructionType.ERROR;
         public const byte EOD = (byte)VCDiffInstructionType.EOD;
 
-        public static CodeTable DefaultTable
-        {
-            get
-            {
-                return new CodeTable();
-            }
-        }
+        public static CodeTable DefaultTable => new CodeTable();
 
         public CodeTable()
         {

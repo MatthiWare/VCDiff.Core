@@ -24,19 +24,19 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 {
     public class WindowDecoder
     {
-        IByteBuffer buffer;
-        long deltaEncodingLength;
-        ParseableChunk chunk;
-        byte deltaIndicator;
-        long dictionarySize;
-        byte winIndicator;
-        long sourceLength;
-        long sourcePosition;
-        long targetLength;
-        long addRunLength;
-        long instructionAndSizesLength;
-        long addressForCopyLength;
-        uint checksum;
+        private IByteBuffer buffer;
+        private long deltaEncodingLength;
+        private ParseableChunk chunk;
+        private byte deltaIndicator;
+        private long dictionarySize;
+        private byte winIndicator;
+        private long sourceLength;
+        private long sourcePosition;
+        private long targetLength;
+        private long addRunLength;
+        private long instructionAndSizesLength;
+        private long addressForCopyLength;
+        private uint checksum;
 
         public byte[] AddRunData { get; private set; }
 
@@ -44,87 +44,27 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
         public byte[] AddressesForCopyData { get; private set; }
 
-        public long AddRunLength
-        {
-            get
-            {
-                return addRunLength;
-            }
-        }
+        public long AddRunLength => addRunLength;
 
-        public long InstructionAndSizesLength
-        {
-            get
-            {
-                return instructionAndSizesLength;
-            }
-        }
+        public long InstructionAndSizesLength => instructionAndSizesLength;
 
-        public long AddressesForCopyLength
-        {
-            get
-            {
-                return addressForCopyLength;
-            }
-        }
+        public long AddressesForCopyLength => addressForCopyLength;
 
-        public byte WinIndicator
-        {
-            get
-            {
-                return winIndicator;
-            }
-        }
+        public byte WinIndicator => winIndicator;
 
-        public long SourcePosition
-        {
-            get
-            {
-                return sourcePosition;
-            }
-        }
+        public long SourcePosition => sourcePosition;
 
-        public long SourceLength
-        {
-            get
-            {
-                return sourceLength;
-            }
-        }
+        public long SourceLength => sourceLength;
 
-        public long DecodedDeltaLength
-        {
-            get
-            {
-                return targetLength;
-            }
-        }
+        public long DecodedDeltaLength => targetLength;
 
         public long DeltaStart { get; private set; }
 
-        public long DeltaLength
-        {
-            get
-            {
-                return DeltaStart + deltaEncodingLength;
-            }
-        }
+        public long DeltaLength => DeltaStart + deltaEncodingLength;
 
-        public byte DeltaIndicator
-        {
-            get
-            {
-                return deltaIndicator;
-            }
-        }
+        public byte DeltaIndicator => deltaIndicator;
 
-        public uint Checksum
-        {
-            get
-            {
-                return checksum;
-            }
-        }
+        public uint Checksum => checksum;
 
         public bool HasChecksum { get; private set; }
 
@@ -150,28 +90,11 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         /// <returns></returns>
         public bool Decode(bool googleVersion)
         {
-            bool success = false;
+            bool success = (ParseWindowIndicatorAndSegment(dictionarySize, 0, false, out winIndicator, out sourceLength, out sourcePosition)
+                && ParseWindowLengths(out targetLength)
+                && ParseDeltaIndicator());
 
-            success = ParseWindowIndicatorAndSegment(dictionarySize, 0, false, out winIndicator, out sourceLength, out sourcePosition);
-
-            if (!success)
-            {
-                return false;
-            }
-
-            success = ParseWindowLengths(out targetLength);
-
-            if (!success)
-            {
-                return false;
-            }
-
-            success = ParseDeltaIndicator();
-
-            if (!success)
-            {
-                return false;
-            }
+            if (!success) return false;
 
             HasChecksum = false;
             if ((winIndicator & (int)VCDiffWindowFlags.VCDCHECKSUM) != 0 && googleVersion)
@@ -181,25 +104,20 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             success = ParseSectionLengths(HasChecksum, out addRunLength, out instructionAndSizesLength, out addressForCopyLength, out checksum);
 
-            if (!success)
-            {
-                return false;
-            }
+            if (!success) return false;
 
-            if (googleVersion && addRunLength == 0 && addressForCopyLength == 0 && instructionAndSizesLength > 0)
-            {
-                //interleave format
-                return true;
-            }
+            if (googleVersion && addRunLength == 0 && addressForCopyLength == 0 && instructionAndSizesLength > 0) return true;
 
             if (buffer.CanRead)
             {
                 AddRunData = buffer.ReadBytes((int)addRunLength);
             }
+
             if (buffer.CanRead)
             {
                 InstructionsAndSizesData = buffer.ReadBytes((int)instructionAndSizesLength);
             }
+
             if (buffer.CanRead)
             {
                 AddressesForCopyData = buffer.ReadBytes((int)addressForCopyLength);
@@ -208,7 +126,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return true;
         }
 
-        bool ParseByte(out byte value)
+        private bool ParseByte(out byte value)
         {
             if ((int)VCDiffResult.SUCCESS != Result)
             {
@@ -226,7 +144,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return true;
         }
 
-        bool ParseInt32(out int value)
+        private bool ParseInt32(out int value)
         {
             if ((int)VCDiffResult.SUCCESS != Result)
             {
@@ -246,9 +164,11 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 case (int)VCDiffResult.ERRROR:
                     value = 0;
                     return false;
+
                 case (int)VCDiffResult.EOD:
                     value = 0;
                     return false;
+
                 default:
                     break;
             }
@@ -257,7 +177,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return true;
         }
 
-        bool ParseUInt32(out uint value)
+        private bool ParseUInt32(out uint value)
         {
             if ((int)VCDiffResult.SUCCESS != Result)
             {
@@ -277,9 +197,11 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 case (int)VCDiffResult.ERRROR:
                     value = 0;
                     return false;
+
                 case (int)VCDiffResult.EOD:
                     value = 0;
                     return false;
+
                 default:
                     break;
             }
@@ -294,7 +216,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return true;
         }
 
-        bool ParseSourceSegmentLengthAndPosition(long from, out long sourceLength, out long sourcePosition)
+        private bool ParseSourceSegmentLengthAndPosition(long from, out long sourceLength, out long sourcePosition)
         {
             int outLength;
             if (!ParseInt32(out outLength))
@@ -339,7 +261,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return true;
         }
 
-        bool ParseWindowIndicatorAndSegment(long dictionarySize, long decodedTargetSize, bool allowVCDTarget, out byte winIndicator, out long sourceSegmentLength, out long sourceSegmentPosition)
+        private bool ParseWindowIndicatorAndSegment(long dictionarySize, long decodedTargetSize, bool allowVCDTarget, out byte winIndicator, out long sourceSegmentLength, out long sourceSegmentPosition)
         {
             if (!ParseByte(out winIndicator))
             {
@@ -355,6 +277,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             {
                 case (int)VCDiffWindowFlags.VCDSOURCE:
                     return ParseSourceSegmentLengthAndPosition(dictionarySize, out sourceSegmentLength, out sourceSegmentPosition);
+
                 case (int)VCDiffWindowFlags.VCDTARGET:
                     if (!allowVCDTarget)
                     {
@@ -365,6 +288,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         return false;
                     }
                     return ParseSourceSegmentLengthAndPosition(decodedTargetSize, out sourceSegmentLength, out sourceSegmentPosition);
+
                 case (int)VCDiffWindowFlags.VCDSOURCE | (int)VCDiffWindowFlags.VCDTARGET:
                     winIndicator = 0;
                     sourceSegmentPosition = 0;
@@ -378,7 +302,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return false;
         }
 
-        bool ParseWindowLengths(out long targetWindowLength)
+        private bool ParseWindowLengths(out long targetWindowLength)
         {
             int deltaLength;
             if (!ParseInt32(out deltaLength))
@@ -399,7 +323,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             return true;
         }
 
-        bool ParseDeltaIndicator()
+        private bool ParseDeltaIndicator()
         {
             if (!ParseByte(out deltaIndicator))
             {
@@ -413,7 +337,6 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             }
             return true;
         }
-
 
         public bool ParseSectionLengths(bool hasChecksum, out long addRunLength, out long instructionsLength, out long addressLength, out uint checksum)
         {
@@ -453,49 +376,17 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
         public class ParseableChunk
         {
-            long end;
-            long position;
-            long start;
+            private long position;
 
-            public long UnparsedSize
-            {
-                get
-                {
-                    return end - position;
-                }
-            }
+            public long UnparsedSize => End - position;
 
-            public long End
-            {
-                get
-                {
-                    return end;
-                }
-            }
+            public long End { get; }
 
-            public bool IsEmpty
-            {
-                get
-                {
-                    return 0 == UnparsedSize;
-                }
-            }
+            public bool IsEmpty => 0 == UnparsedSize;
 
-            public long Start
-            {
-                get
-                {
-                    return start;
-                }
-            }
+            public long Start { get; }
 
-            public long ParsedSize
-            {
-                get
-                {
-                    return position - start;
-                }
-            }
+            public long ParsedSize => position - Start;
 
             public long Position
             {
@@ -505,11 +396,11 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 }
                 set
                 {
-                    if (position < start)
+                    if (position < Start)
                     {
                         return;
                     }
-                    if (position > end)
+                    if (position > End)
                     {
                         return;
                     }
@@ -519,8 +410,8 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             public ParseableChunk(long s, long len)
             {
-                this.start = s;
-                this.end = s + len;
+                this.Start = s;
+                this.End = s + len;
                 this.position = s;
             }
         }

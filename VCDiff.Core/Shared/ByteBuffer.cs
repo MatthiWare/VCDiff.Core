@@ -46,13 +46,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public bool CanRead
-        {
-            get
-            {
-                return offset < length;
-            }
-        }
+        public bool CanRead => offset < length;
 
         public long Position
         {
