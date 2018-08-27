@@ -6,6 +6,7 @@ using MatthiWare.Compression.VCDiff.Decoders;
 using MatthiWare.Compression.VCDiff.Encoders;
 using MatthiWare.Compression.VCDiff.Includes;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace VCDiff.Core.Tests.Integration
 {
@@ -13,10 +14,17 @@ namespace VCDiff.Core.Tests.Integration
     public class IntegrationTests
     {
 
+        private readonly ITestOutputHelper output;
+
+        public IntegrationTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
         [Fact]
         public void TestEncodeAndDecodeShouldBeTheSame()
         {
-            int size = 50 * 1024 * 1024; // 50 MB
+            int size = 20 * 1024 * 1024; // 20 MB
 
             byte[] oldData = CreateRandomByteArray(size);
             byte[] newData = new byte[size];
@@ -32,6 +40,8 @@ namespace VCDiff.Core.Tests.Integration
             var coder = new VCCoder(sOld, sNew, sDelta);
             Assert.Equal(VCDiffResult.SUCCESS, coder.Encode());
 
+            output.WriteLine($"Delta is {sDelta.Position / 1024 / 1024} MB's");
+
             sDelta.SetLength(sDelta.Position);
             sDelta.Position = 0;
             sOld.Position = 0;
@@ -41,7 +51,9 @@ namespace VCDiff.Core.Tests.Integration
 
             var decoder = new VCDecoder(sOld, sDelta, sPatched);
             Assert.Equal(VCDiffResult.SUCCESS, decoder.Start());
-            Assert.Equal(VCDiffResult.SUCCESS, decoder.Decode(out _));
+            Assert.Equal(VCDiffResult.SUCCESS, decoder.Decode(out long bytesWritten));
+
+            output.WriteLine($"Written {bytesWritten / 1024 / 1024} MB's");
 
             Assert.Equal(sNew.ToArray(), sPatched.ToArray());
         }
