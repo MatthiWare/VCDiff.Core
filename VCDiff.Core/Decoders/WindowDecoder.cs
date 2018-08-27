@@ -410,9 +410,9 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             public ParseableChunk(long s, long len)
             {
-                this.Start = s;
-                this.End = s + len;
-                this.position = s;
+                Start = s;
+                End = s + len;
+                position = s;
             }
         }
     }

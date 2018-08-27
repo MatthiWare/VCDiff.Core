@@ -101,13 +101,13 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 
                 if (instmode == null)
                 {
-                    instmode = new int[this.numInstAndModes][];
+                    instmode = new int[numInstAndModes][];
                     opcodes2[opcode] = instmode;
                 }
                 int[] sizeArray = instmode[inst + mode];
                 if (sizeArray == null)
                 {
-                    sizeArray = NewSizeOpcodeArray(this.maxSize + 1);
+                    sizeArray = NewSizeOpcodeArray(maxSize + 1);
                     instmode[inst + mode] = sizeArray;
                 }
                 if (sizeArray[size] == CodeTable.kNoOpcode)
@@ -128,7 +128,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 
             public int LookUp(byte first, byte inst, byte size, byte mode)
             {
-                if (size > this.maxSize)
+                if (size > maxSize)
                 {
                     return CodeTable.kNoOpcode;
                 }

@@ -49,12 +49,12 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         {
             if (maxBufferSize <= 0) maxBufferSize = 1;
 
-            this.oldData = new ByteStreamReader(dict);
-            this.newData = new ByteStreamReader(target);
+            oldData = new ByteStreamReader(dict);
+            newData = new ByteStreamReader(target);
             this.sout = new ByteStreamWriter(sout);
             hasher = new RollingHash(BlockHash.BlockSize);
 
-            this.bufferSize = maxBufferSize * 1024 * 1024;
+            bufferSize = maxBufferSize * 1024 * 1024;
         }
 
         /// <summary>

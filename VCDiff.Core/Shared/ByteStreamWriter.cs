@@ -56,12 +56,12 @@ namespace MatthiWare.Compression.VCDiff.Shared
 
         public void writeByte(byte b)
         {
-            this.buffer.WriteByte(b);
+            buffer.WriteByte(b);
         }
 
         public void writeBytes(byte[] b)
         {
-            this.buffer.Write(b, 0, b.Length);
+            buffer.Write(b, 0, b.Length);
         }
 
         public void writeUInt16(ushort s)
@@ -73,7 +73,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 Array.Reverse(bytes);
             }
 
-            this.writeBytes(bytes);
+            writeBytes(bytes);
         }
 
         public void writeUInt32(uint i)
@@ -85,7 +85,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 Array.Reverse(bytes);
             }
 
-            this.writeBytes(bytes);
+            writeBytes(bytes);
         }
 
         public void writeFloat(float f)
@@ -97,7 +97,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 Array.Reverse(bytes);
             }
 
-            this.writeBytes(bytes);
+            writeBytes(bytes);
         }
 
         public void writeDouble(double d)
@@ -109,12 +109,12 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 Array.Reverse(bytes);
             }
 
-            this.writeBytes(bytes);
+            writeBytes(bytes);
         }
 
         public void Dispose()
         {
-            this.buffer.Dispose();
+            buffer.Dispose();
         }
     }
 }

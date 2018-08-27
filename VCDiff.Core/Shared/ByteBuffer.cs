@@ -38,11 +38,11 @@ namespace MatthiWare.Compression.VCDiff.Shared
             this.bytes = bytes;
             if (bytes != null)
             {
-                this.length = bytes.Length;
+                length = bytes.Length;
             }
             else
             {
-                this.length = 0;
+                length = 0;
             }
         }
 
@@ -72,7 +72,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
         public byte PeekByte()
         {
             if (offset >= length) throw new IndexOutOfRangeException("Trying to read past End of Buffer");
-            return this.bytes[offset];
+            return bytes[offset];
         }
 
         public byte[] PeekBytes(int len)
@@ -93,7 +93,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
         public byte ReadByte()
         {
             if (offset >= length) throw new IndexOutOfRangeException("Trying to read past End of Buffer");
-            return this.bytes[offset++];
+            return bytes[offset++];
         }
 
         public byte[] ReadBytes(int len)
@@ -112,15 +112,9 @@ namespace MatthiWare.Compression.VCDiff.Shared
             return rbuff;
         }
 
-        public void Next()
-        {
-            offset++;
-        }
+        public void Next() => offset++;
 
-        public void Skip(int len)
-        {
-            offset += len;
-        }
+        public void Skip(int len) => offset += len;
 
         public void Dispose()
         {

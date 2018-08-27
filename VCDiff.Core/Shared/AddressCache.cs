@@ -51,17 +51,17 @@ namespace MatthiWare.Compression.VCDiff.Shared
         {
             this.sameSize = sameSize;
             this.nearSize = nearSize;
-            this.nearCache = new long[nearSize];
-            this.sameCache = new long[sameSize * 256];
+            nearCache = new long[nearSize];
+            sameCache = new long[sameSize * 256];
             nextSlot = 0;
         }
 
         public AddressCache()
         {
-            this.sameSize = DefaultSameCacheSize;
-            this.nearSize = DefaultNearCacheSize;
-            this.nearCache = new long[nearSize];
-            this.sameCache = new long[sameSize * 256];
+            sameSize = DefaultSameCacheSize;
+            nearSize = DefaultNearCacheSize;
+            nearCache = new long[nearSize];
+            sameCache = new long[sameSize * 256];
             nextSlot = 0;
         }
 

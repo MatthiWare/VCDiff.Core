@@ -44,7 +44,5 @@ namespace MatthiWare.Compression.VCDiff.Shared
         void Skip(int len);
         void Next();
         void BufferAll();
-
-        void Dispose();
     }
 }

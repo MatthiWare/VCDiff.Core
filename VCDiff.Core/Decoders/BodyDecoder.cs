@@ -63,7 +63,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             }
             window = w;
             this.sout = sout;
-            this.dict = dictionary;
+            dict = dictionary;
             this.target = target;
             targetData = new List<byte>();
         }
@@ -97,7 +97,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                     previous.Clear();
                     long initialLength = incoming.Length;
 
-                    InstructionDecoder instrDecoder = new InstructionDecoder(incoming, this.customTable);
+                    InstructionDecoder instrDecoder = new InstructionDecoder(incoming, customTable);
 
                     while (incoming.CanRead && decodedOnly < window.DecodedDeltaLength)
                     {
@@ -213,7 +213,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             ByteBuffer addressBuffer = new ByteBuffer(window.AddressesForCopyData);
             ByteBuffer addRunBuffer = new ByteBuffer(window.AddRunData);
 
-            InstructionDecoder instrDecoder = new InstructionDecoder(instructionBuffer, this.customTable);
+            InstructionDecoder instrDecoder = new InstructionDecoder(instructionBuffer, customTable);
 
             VCDiffResult result = VCDiffResult.SUCCESS;
 
