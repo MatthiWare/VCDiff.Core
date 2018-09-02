@@ -29,28 +29,26 @@ namespace MatthiWare.Compression.VCDiff.Shared
 
         private const byte DefaultNearCacheSize = 4;
         private const byte DefaultSameCacheSize = 3;
-        private byte nearSize;
-        private byte sameSize;
         private long[] nearCache;
         private long[] sameCache;
         private int nextSlot;
 
-        public byte NearSize => nearSize;
+        public byte NearSize { get; }
 
-        public byte SameSize => sameSize;
+        public byte SameSize { get; }
 
         public byte FirstNear => (byte)VCDiffModes.FIRST;
 
-        public byte FirstSame => (byte)(VCDiffModes.FIRST + nearSize);
+        public byte FirstSame => (byte)(VCDiffModes.FIRST + NearSize);
 
-        public byte Last => (byte)(FirstSame + sameSize - 1);
+        public byte Last => (byte)(FirstSame + SameSize - 1);
 
         public static byte DefaultLast => (byte)(VCDiffModes.FIRST + DefaultNearCacheSize + DefaultSameCacheSize - 1);
 
         public AddressCache(byte nearSize, byte sameSize)
         {
-            this.sameSize = sameSize;
-            this.nearSize = nearSize;
+            this.SameSize = sameSize;
+            this.NearSize = nearSize;
             nearCache = new long[nearSize];
             sameCache = new long[sameSize * 256];
             nextSlot = 0;
@@ -58,10 +56,10 @@ namespace MatthiWare.Compression.VCDiff.Shared
 
         public AddressCache()
         {
-            sameSize = DefaultSameCacheSize;
-            nearSize = DefaultNearCacheSize;
-            nearCache = new long[nearSize];
-            sameCache = new long[sameSize * 256];
+            SameSize = DefaultSameCacheSize;
+            NearSize = DefaultNearCacheSize;
+            nearCache = new long[NearSize];
+            sameCache = new long[SameSize * 256];
             nextSlot = 0;
         }
 
@@ -122,14 +120,14 @@ namespace MatthiWare.Compression.VCDiff.Shared
 
         void UpdateCache(long address)
         {
-            if (nearSize > 0)
+            if (NearSize > 0)
             {
                 nearCache[nextSlot] = address;
-                nextSlot = (nextSlot + 1) % nearSize;
+                nextSlot = (nextSlot + 1) % NearSize;
             }
-            if (sameSize > 0)
+            if (SameSize > 0)
             {
-                sameCache[(int)(address % (sameSize * 256))] = address;
+                sameCache[(int)(address % (SameSize * 256))] = address;
             }
         }
 
@@ -146,9 +144,9 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 return (byte)0;
             }
 
-            if (sameSize > 0)
+            if (SameSize > 0)
             {
-                int pos = (int)(address % (sameSize * 256));
+                int pos = (int)(address % (SameSize * 256));
                 if (SameAddress(pos) == address)
                 {
                     UpdateCache(address);
@@ -167,7 +165,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 bestEncoded = hereEncoded;
             }
 
-            for (int i = 0; i < nearSize; ++i)
+            for (int i = 0; i < NearSize; ++i)
             {
                 long nearEncoded = address - NearAddress(i);
                 if ((nearEncoded >= 0) && (nearEncoded < bestEncoded))
@@ -201,7 +199,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             long start = sin.Position;
             if (here < 0)
             {
-                return (int)VCDiffResult.ERRROR;
+                return (int)VCDiffResult.ERROR;
             }
 
             if (!sin.CanRead)
@@ -221,7 +219,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
 
                 switch (encoded)
                 {
-                    case (int)VCDiffResult.ERRROR:
+                    case (int)VCDiffResult.ERROR:
                         return encoded;
                     case (int)VCDiffResult.EOD:
                         sin.Position = start;
@@ -244,13 +242,13 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 }
                 else
                 {
-                    return (int)VCDiffResult.ERRROR;
+                    return (int)VCDiffResult.ERROR;
                 }
             }
 
             if (!IsDecodedAddressValid(decoded, here))
             {
-                return (int)VCDiffResult.ERRROR;
+                return (int)VCDiffResult.ERROR;
             }
             UpdateCache(decoded);
             return decoded;

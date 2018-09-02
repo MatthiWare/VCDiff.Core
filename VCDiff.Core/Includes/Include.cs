@@ -23,7 +23,7 @@ namespace MatthiWare.Compression.VCDiff.Includes
     public enum VCDiffResult
     {
         SUCCESS = 0,
-        ERRROR = -1,
+        ERROR = -1,
         EOD = -2
     }
 

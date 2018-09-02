@@ -91,28 +91,28 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             if (V != MagicBytes[0])
             {
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             if (C != MagicBytes[1])
             {
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             if (D != MagicBytes[2])
             {
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             if (version != 0x00 && version != 'S')
             {
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             //compression not supported
             if ((hdr & (int)VCDiffCodeFlags.VCDDECOMPRESS) != 0)
             {
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             //custom code table!
@@ -153,7 +153,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             if (!IsStarted)
             {
                 bytesWritten = 0;
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             VCDiffResult result = VCDiffResult.SUCCESS;
@@ -218,7 +218,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         else
                         {
                             //invalid file
-                            return VCDiffResult.ERRROR;
+                            return VCDiffResult.ERROR;
                         }
                     }
                 }

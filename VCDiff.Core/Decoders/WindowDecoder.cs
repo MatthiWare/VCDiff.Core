@@ -161,7 +161,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             int parsed = VarIntBE.ParseInt32(buffer);
             switch (parsed)
             {
-                case (int)VCDiffResult.ERRROR:
+                case (int)VCDiffResult.ERROR:
                     value = 0;
                     return false;
 
@@ -194,7 +194,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             long parsed = VarIntBE.ParseInt64(buffer);
             switch (parsed)
             {
-                case (int)VCDiffResult.ERRROR:
+                case (int)VCDiffResult.ERROR:
                     value = 0;
                     return false;
 
@@ -207,7 +207,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             }
             if (parsed > 0xFFFFFFFF)
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 value = 0;
                 return false;
             }
@@ -228,7 +228,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             sourceLength = outLength;
             if (sourceLength > from)
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 sourceLength = 0;
                 sourcePosition = 0;
                 return false;
@@ -243,7 +243,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             sourcePosition = outPos;
             if (sourcePosition > from)
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 sourceLength = 0;
                 sourcePosition = 0;
                 return false;
@@ -252,7 +252,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             long segmentEnd = sourcePosition + sourceLength;
             if (segmentEnd > from)
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 sourceLength = 0;
                 sourcePosition = 0;
                 return false;
@@ -284,7 +284,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         winIndicator = 0;
                         sourceSegmentLength = 0;
                         sourceSegmentPosition = 0;
-                        Result = (int)VCDiffResult.ERRROR;
+                        Result = (int)VCDiffResult.ERROR;
                         return false;
                     }
                     return ParseSourceSegmentLengthAndPosition(decodedTargetSize, out sourceSegmentLength, out sourceSegmentPosition);
@@ -327,12 +327,12 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         {
             if (!ParseByte(out deltaIndicator))
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 return false;
             }
             if ((deltaIndicator & ((int)VCDiffCompressFlags.VCDDATACOMP | (int)VCDiffCompressFlags.VCDINSTCOMP | (int)VCDiffCompressFlags.VCDADDRCOMP)) > 0)
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 return false;
             }
             return true;
@@ -367,7 +367,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             if (deltaEncodingLength != totalLen)
             {
-                Result = (int)VCDiffResult.ERRROR;
+                Result = (int)VCDiffResult.ERROR;
                 return false;
             }
 

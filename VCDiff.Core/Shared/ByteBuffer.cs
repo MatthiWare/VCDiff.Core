@@ -61,11 +61,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             }
         }
 
-        public void BufferAll()
-        {
-            //not implemented in this one
-            //since it already contains the full buffered data
-        }
+        public void BufferAll() => throw new NotImplementedException("Already contains the full buffer data");
 
         public long Length => length;
 

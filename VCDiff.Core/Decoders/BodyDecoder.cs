@@ -32,7 +32,6 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         private IByteBuffer dict;
         private IByteBuffer target;
         private AddressCache addressCache;
-        private long decodedOnly = 0;
         private long bytesWritten = 0;
         private IList<byte> targetData;
         private readonly CustomCodeTableDecoder customTable;
@@ -40,7 +39,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         /// <summary>
         /// Total bytes decoded
         /// </summary>
-        public long Decoded => decodedOnly;
+        public long Decoded { get; private set; } = 0;
 
         /// <summary>
         /// The main decoder loop for the data
@@ -99,7 +98,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                     InstructionDecoder instrDecoder = new InstructionDecoder(incoming, customTable);
 
-                    while (incoming.CanRead && decodedOnly < window.DecodedDeltaLength)
+                    while (incoming.CanRead && Decoded < window.DecodedDeltaLength)
                     {
                         int decodedSize = 0;
                         byte mode = 0;
@@ -121,7 +120,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                                     break;
                                 case VCDiffInstructionType.ERROR:
                                     targetData.Clear();
-                                    return VCDiffResult.ERRROR;
+                                    return VCDiffResult.ERROR;
                                 default:
                                     break;
                             }
@@ -160,7 +159,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                                 break;
                             default:
                                 targetData.Clear();
-                                return VCDiffResult.ERRROR;
+                                return VCDiffResult.ERROR;
                         }
 
                         if (result == VCDiffResult.EOD)
@@ -195,7 +194,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                 if (adler != window.Checksum)
                 {
-                    result = VCDiffResult.ERRROR;
+                    result = VCDiffResult.ERROR;
                 }
             }
 
@@ -217,12 +216,10 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             VCDiffResult result = VCDiffResult.SUCCESS;
 
-            while (decodedOnly < window.DecodedDeltaLength && instructionBuffer.CanRead)
+            while (Decoded < window.DecodedDeltaLength && instructionBuffer.CanRead)
             {
-                int decodedSize = 0;
-                byte mode = 0;
 
-                VCDiffInstructionType instruction = instrDecoder.Next(out decodedSize, out mode);
+                VCDiffInstructionType instruction = instrDecoder.Next(out int decodedSize, out byte mode);
 
                 switch (instruction)
                 {
@@ -231,7 +228,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         return VCDiffResult.EOD;
                     case VCDiffInstructionType.ERROR:
                         targetData.Clear();
-                        return VCDiffResult.ERRROR;
+                        return VCDiffResult.ERROR;
                     default:
                         break;
                 }
@@ -249,7 +246,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         break;
                     default:
                         targetData.Clear();
-                        return VCDiffResult.ERRROR;
+                        return VCDiffResult.ERROR;
                 }
             }
 
@@ -259,7 +256,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                 if (adler != window.Checksum)
                 {
-                    result = VCDiffResult.ERRROR;
+                    result = VCDiffResult.ERROR;
                 }
             }
 
@@ -269,19 +266,19 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
         VCDiffResult DecodeCopy(int size, byte mode, ByteBuffer addresses)
         {
-            long here = window.SourceLength + decodedOnly;
+            long here = window.SourceLength + Decoded;
             long decoded = addressCache.DecodeAddress(here, mode, addresses);
 
             switch ((VCDiffResult)decoded)
             {
-                case VCDiffResult.ERRROR:
-                    return VCDiffResult.ERRROR;
+                case VCDiffResult.ERROR:
+                    return VCDiffResult.ERROR;
                 case VCDiffResult.EOD:
                     return VCDiffResult.EOD;
                 default:
                     if (decoded < 0 || decoded > here)
                     {
-                        return VCDiffResult.ERRROR;
+                        return VCDiffResult.ERROR;
                     }
                     break;
             }
@@ -295,7 +292,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 foreach (var b in rbytes)
                     targetData.Add(b);
 
-                decodedOnly += size;
+                Decoded += size;
                 return VCDiffResult.SUCCESS;
             }
 
@@ -325,7 +322,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             target.Position = decoded;
             sout.writeBytes(target.ReadBytes(size));*/
 
-            return VCDiffResult.ERRROR;
+            return VCDiffResult.ERROR;
         }
 
         VCDiffResult DecodeRun(int size, ByteBuffer addRun)
@@ -348,7 +345,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 targetData.Add(b);
             }
 
-            decodedOnly += size;
+            Decoded += size;
 
             return VCDiffResult.SUCCESS;
         }
@@ -371,7 +368,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             foreach (var b in rbytes)
                 targetData.Add(b);
 
-            decodedOnly += size;
+            Decoded += size;
             return VCDiffResult.SUCCESS;
         }
 

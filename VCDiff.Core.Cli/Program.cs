@@ -6,7 +6,7 @@ namespace VCDiff.Core.Cli
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+
         }
     }
 }

@@ -45,7 +45,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             //at least according to the RFC specs.
             int lengthOfCodeTable = VarIntBE.ParseInt32(source);
 
-            if (lengthOfCodeTable == 0) return VCDiffResult.ERRROR;
+            if (lengthOfCodeTable == 0) return VCDiffResult.ERROR;
 
             ByteBuffer codeTable = new ByteBuffer(source.ReadBytes(lengthOfCodeTable));
 
@@ -58,7 +58,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             if (NearSize == 0 || SameSize == 0 || NearSize > byte.MaxValue || SameSize > byte.MaxValue)
             {
-                return VCDiffResult.ERRROR;
+                return VCDiffResult.ERROR;
             }
 
             CustomTable = new CodeTable();
@@ -82,13 +82,13 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                 if (result != VCDiffResult.SUCCESS || bytesWritten == 0)
                 {
-                    return VCDiffResult.ERRROR;
+                    return VCDiffResult.ERROR;
                 }
 
                 //set the new table data that was decoded
                 if (!CustomTable.SetBytes(sout.ToArray()))
                 {
-                    result = VCDiffResult.ERRROR;
+                    result = VCDiffResult.ERROR;
                 }
             }
 

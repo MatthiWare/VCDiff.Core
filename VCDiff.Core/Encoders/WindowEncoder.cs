@@ -27,7 +27,6 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 {
     public class WindowEncoder
     {
-        private bool interleaved;
         private int maxMode;
         private long dictionarySize;
         private long targetLength;
@@ -38,23 +37,21 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         private IList<byte> instructionAndSizes;
         private IList<byte> dataForAddAndRun;
         private IList<byte> addressForCopy;
-        private bool hasChecksum;
-        private uint checksum;
 
-        public bool HasChecksum => hasChecksum;
+        public bool HasChecksum { get; }
 
-        public bool IsInterleaved => interleaved;
+        public bool IsInterleaved { get; }
 
-        public uint Checksum => checksum;
+        public uint Checksum { get; }
 
         //This is a window encoder for the VCDIFF format
         //if you are not including a checksum simply pass 0 to checksum
         //it will be ignored
         public WindowEncoder(long dictionarySize, uint checksum, bool interleaved = false, bool hasChecksum = false)
         {
-            this.checksum = checksum;
-            this.hasChecksum = hasChecksum;
-            this.interleaved = interleaved;
+            this.Checksum = checksum;
+            this.HasChecksum = hasChecksum;
+            this.IsInterleaved = interleaved;
             this.dictionarySize = dictionarySize;
 
             //The encoder currently doesn't support encoding with a custom table
@@ -172,12 +169,12 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         {
             int extraLength = 0;
 
-            if (hasChecksum)
+            if (HasChecksum)
             {
-                extraLength += VarIntBE.CalcInt64Length(checksum);
+                extraLength += VarIntBE.CalcInt64Length(Checksum);
             }
 
-            if (!interleaved)
+            if (!IsInterleaved)
             {
                 int lengthOfDelta = VarIntBE.CalcInt32Length((int)targetLength) +
                 1 +
@@ -218,7 +215,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             VarIntBE.CalcInt32Length(lengthOfDelta);
 
             //Google's Checksum Implementation Support
-            if (hasChecksum)
+            if (HasChecksum)
             {
                 sout.writeByte((byte)VCDiffWindowFlags.VCDSOURCE | (byte)VCDiffWindowFlags.VCDCHECKSUM); //win indicator
             }
@@ -240,16 +237,16 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             //  if the encoder and decoder supported that feature.]
 
             //non interleaved then it is separata areas for each type
-            if (!interleaved)
+            if (!IsInterleaved)
             {
                 VarIntBE.AppendInt32(dataForAddAndRun.Count, sout); //length of add/run
                 VarIntBE.AppendInt32(instructionAndSizes.Count, sout); //length of instructions and sizes
                 VarIntBE.AppendInt32(addressForCopy.Count, sout); //length of addresses for copys
 
                 //Google Checksum Support
-                if (hasChecksum)
+                if (HasChecksum)
                 {
-                    VarIntBE.AppendInt64(checksum, sout);
+                    VarIntBE.AppendInt64(Checksum, sout);
                 }
 
                 sout.writeBytes(dataForAddAndRun.ToArray()); //data section for adds and runs
@@ -264,9 +261,9 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 VarIntBE.AppendInt32(0, sout); //length of addresses for copys
 
                 //Google Checksum Support
-                if (hasChecksum)
+                if (HasChecksum)
                 {
-                    VarIntBE.AppendInt64(checksum, sout);
+                    VarIntBE.AppendInt64(Checksum, sout);
                 }
 
                 sout.writeBytes(instructionAndSizes.ToArray()); //data for instructions and sizes, in interleaved it is everything

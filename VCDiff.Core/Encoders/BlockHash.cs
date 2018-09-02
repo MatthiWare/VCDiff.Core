@@ -39,19 +39,17 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         }
         static int maxMatchesToCheck = (blockSize >= 32) ? 32 : (32 * (32 / blockSize));
         const int maxProbes = 16;
-        IByteBuffer sourceData;
         long offset;
         ulong hashTableMask;
         long lastBlockAdded = 0;
         long[] hashTable;
         long[] nextBlockTable;
         long[] lastBlockTable;
-        long tableSize = 0;
         RollingHash hasher;
 
-        public IByteBuffer Source => sourceData;
+        public IByteBuffer Source { get; }
 
-        public long SourceSize => sourceData.Length;
+        public long SourceSize => Source.Length;
 
         /// <summary>
         /// Create a hash lookup table for the data
@@ -63,17 +61,17 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         {
             maxMatchesToCheck = (blockSize >= 32) ? 32 : (32 * (32 / blockSize));
             this.hasher = hasher;
-            sourceData = sin;
+            Source = sin;
             this.offset = offset;
-            tableSize = CalcTableSize();
+            TableSize = CalcTableSize();
 
-            if (tableSize == 0)
+            if (TableSize == 0)
             {
                 throw new Exception("BlockHash Table Size is Invalid == 0");
             }
 
-            hashTableMask = (ulong)tableSize - 1;
-            hashTable = new long[tableSize];
+            hashTableMask = (ulong)TableSize - 1;
+            hashTable = new long[TableSize];
             nextBlockTable = new long[BlocksCount];
             lastBlockTable = new long[BlocksCount];
             lastBlockAdded = -1;
@@ -95,7 +93,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 
         long CalcTableSize()
         {
-            long min = (sourceData.Length / sizeof(int)) + 1;
+            long min = (Source.Length / sizeof(int)) + 1;
             long size = 1;
 
             while (size < min)
@@ -113,7 +111,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 return 0;
             }
 
-            if ((sourceData.Length > 0) && (size > (min * 2)))
+            if ((Source.Length > 0) && (size > (min * 2)))
             {
                 return 0;
             }
@@ -132,7 +130,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 
         public void AddAllBlocksThroughIndex(long index)
         {
-            if (index > sourceData.Length)
+            if (index > Source.Length)
             {
                 return;
             }
@@ -143,32 +141,32 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 return;
             }
 
-            if (sourceData.Length < blockSize)
+            if (Source.Length < blockSize)
             {
                 return;
             }
 
             long endLimit = index;
-            long lastLegalHashIndex = (sourceData.Length - blockSize);
+            long lastLegalHashIndex = (Source.Length - blockSize);
 
             if (endLimit > lastLegalHashIndex)
             {
                 endLimit = lastLegalHashIndex + 1;
             }
 
-            long offset = sourceData.Position + NextIndexToAdd;
-            long end = sourceData.Position + endLimit;
-            sourceData.Position = offset;
+            long offset = Source.Position + NextIndexToAdd;
+            long end = Source.Position + endLimit;
+            Source.Position = offset;
             while (offset < end)
             {
-                AddBlock(hasher.Hash(sourceData.ReadBytes(blockSize)));
+                AddBlock(hasher.Hash(Source.ReadBytes(blockSize)));
                 offset += blockSize;
             }
         }
 
-        public long BlocksCount => sourceData.Length / blockSize;
+        public long BlocksCount => Source.Length / blockSize;
 
-        public long TableSize => tableSize;
+        public long TableSize { get; } = 0;
 
         long GetTableIndex(ulong hash)
         {
@@ -207,7 +205,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 targetMatchOffset -= leftMatching;
                 matchSize += leftMatching;
 
-                long sourceBytesToRight = sourceData.Length - sourceMatchEnd;
+                long sourceBytesToRight = Source.Length - sourceMatchEnd;
                 long targetBytesToRight = targetSize - targetMatchEnd;
                 long rightLimit = Math.Min(sourceBytesToRight, targetBytesToRight);
 
@@ -255,16 +253,16 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 
         public void AddAllBlocks()
         {
-            AddAllBlocksThroughIndex(sourceData.Length);
+            AddAllBlocksThroughIndex(Source.Length);
         }
 
         public bool BlockContentsMatch(long block1, long toffset, IByteBuffer target)
         {
             //this sets up the positioning of the buffers
             //as well as testing the first byte
-            sourceData.Position = block1 * blockSize;
-            if (!sourceData.CanRead) return false;
-            byte lb = sourceData.ReadByte();
+            Source.Position = block1 * blockSize;
+            if (!Source.CanRead) return false;
+            byte lb = Source.ReadByte();
             target.Position = toffset;
             if (!target.CanRead) return false;
             byte rb = target.ReadByte();
@@ -283,9 +281,9 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             //we already compared the first byte so moving on!
             int i = 1;
 
-            long srcLength = sourceData.Length;
+            long srcLength = Source.Length;
             long trgLength = target.Length;
-            long offset1 = sourceData.Position;
+            long offset1 = Source.Position;
             long offset2 = target.Position;
 
             while (i < blockSize)
@@ -294,7 +292,7 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 {
                     return false;
                 }
-                byte lb = sourceData.ReadByte();
+                byte lb = Source.ReadByte();
                 byte rb = target.ReadByte();
                 if (lb != rb)
                 {
@@ -349,8 +347,8 @@ namespace MatthiWare.Compression.VCDiff.Encoders
                 if (sindex < 0 || tindex < 0) break;
                 //has to be done this way or a race condition will happen
                 //if the sourcce and target are the same buffer
-                sourceData.Position = sindex;
-                byte lb = sourceData.ReadByte();
+                Source.Position = sindex;
+                byte lb = Source.ReadByte();
                 target.Position = tindex;
                 byte rb = target.ReadByte();
                 if (lb != rb) break;
@@ -364,15 +362,15 @@ namespace MatthiWare.Compression.VCDiff.Encoders
             long sindex = end;
             long tindex = tstart;
             long bytesFound = 0;
-            long srcLength = sourceData.Length;
+            long srcLength = Source.Length;
             long trgLength = target.Length;
-            sourceData.Position = end;
+            Source.Position = end;
             target.Position = tstart;
             while (bytesFound < maxBytes)
             {
                 if (sindex >= srcLength || tindex >= trgLength) break;
-                if (!sourceData.CanRead) break;
-                byte lb = sourceData.ReadByte();
+                if (!Source.CanRead) break;
+                byte lb = Source.ReadByte();
                 if (!target.CanRead) break;
                 byte rb = target.ReadByte();
                 if (lb != rb) break;
@@ -391,25 +389,21 @@ namespace MatthiWare.Compression.VCDiff.Encoders
 
         public class Match
         {
-            long size = 0;
-            long sOffset = 0;
-            long tOffset = 0;
-
             public void ReplaceIfBetterMatch(long csize, long sourcOffset, long targetOffset)
             {
-                if (csize > size)
+                if (csize > Size)
                 {
-                    size = csize;
-                    sOffset = sourcOffset;
-                    tOffset = targetOffset;
+                    Size = csize;
+                    SourceOffset = sourcOffset;
+                    TargetOffset = targetOffset;
                 }
             }
 
-            public long Size => size;
+            public long Size { get; private set; } = 0;
 
-            public long SourceOffset => sOffset;
+            public long SourceOffset { get; private set; } = 0;
 
-            public long TargetOffset => tOffset;
+            public long TargetOffset { get; private set; } = 0;
         }
     }
 }
