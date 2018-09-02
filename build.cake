@@ -39,14 +39,7 @@ Task("Build")
 		DotNetCoreBuild(solution,
 			new DotNetCoreBuildSettings 
 			{
-				NoRestore = true,
-				Configuration = configuration
-			});
-
-		DotNetCoreBuild(solution,
-			new DotNetCoreBuildSettings 
-			{
-				NoRestore = true,
+				NoRestore = false,
 				Configuration = configuration
 			});
 	});
