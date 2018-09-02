@@ -9,7 +9,45 @@ Original work by [Metric](https://github.com/Metric)
 Original repo [Metric/VCDiff](https://github.com/Metric/VCDiff)
 
 ## Requirements
-.NET Standard 2.0+
+- .NET Standard 2.0+ _(code)_
+- .NET Core 2.1 _(CLI)_
+
+# CLI
+
+Using the CLI for creating delta patches and applying delta
+
+### Create delta patch
+
+`dotnet .\VCDiff.Core.Cli.dll -e .\original.exe .\updated.exe .\delta 8`
+
+To encode/create delta patch you need to specify `-e [original] [updated] [output] [window size]`.
+
+_[Window size]: The maximum buffer size for window chunking (in megabytes)._
+
+### Apply delta patch
+
+`dotnet .\VCDiff.Core.Cli.dll -d .\original.exe .\delta .\updated.exe`
+
+To apply delta patch you need to specify `-d [original] [delta] [output]`.
+
+### Verify hashes in PowerShell
+
+- Encode
+`dotnet .\VCDiff.Core.Cli.dll -e .\original.exe .\updated.exe .\delta 8`
+
+- Decode
+`dotnet .\VCDiff.Core.Cli.dll -d .\original.exe .\delta .\updated_with_delta.exe`
+
+- Verify hash
+`get-filehash -Path ".\updated.exe", ".\updated_with_delta.exe" -algorithm MD5`
+
+
+| Algorithm | Hash                             | Path                                                                           |          |
+|-----------|----------------------------------|--------------------------------------------------------------------------------|----------|
+| MD5       | 2BFD9E6BE33C3441D79E4EE2AC725C74 | D:\Source\Repos\VCDiff.Core\VCDiff.Core.Cli\bin\publish\updated.exe            | Original |
+| MD5       | 2BFD9E6BE33C3441D79E4EE2AC725C74 | D:\Source\Repos\VCDiff.Core\VCDiff.Core.Cli\bin\publish\updated_with_delta.exe | Patched  |
+
+
 
 # Encoding Data
 The dictionary must be a file or data that is already in memory. The file must be fully read in first in order to encode properly. This is just how the algorithm works for VCDiff. The encode function is blocking.
