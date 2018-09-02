@@ -3,6 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Company>MatthiWare</Company>
+    <Authors>Matthias Beerens</Authors>
+    <Version>0.1.0</Version>
+    <Description>CLI for VCDiff.Core a managed VCDiff implementation in .Net Core</Description>
+    <Copyright>Copyright © MatthiWare 2018</Copyright>
+    <PackageLicenseUrl>https://github.com/MatthiWare/VCDiff.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/MatthiWare/VCDiff.Core</RepositoryUrl>
+    <PackageTags>VCDiff delta cli</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
