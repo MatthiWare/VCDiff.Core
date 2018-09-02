@@ -4,7 +4,7 @@ using MatthiWare.Compression.VCDiff.Decoders;
 using MatthiWare.Compression.VCDiff.Encoders;
 using MatthiWare.Compression.VCDiff.Includes;
 
-namespace VCDiff.Core.Cli
+namespace MatthiWare.Compression.VCDiff.Cli
 {
     class Program
     {

@@ -1,3 +1,10 @@
+<p align="center">
+<a href="https://ci.appveyor.com/project/Matthiee/vcdiff-core"><img src="https://ci.appveyor.com/api/projects/status/fr1l0ktyxtofu72e?svg=true" alt="Buitld Status (AppVeyor)"></a>
+<a href="https://github.com/MatthiWare/VCDiff.Core/issues"><img src="https://img.shields.io/github/issues/MatthiWare/VCDiff.Core.svg" alt="Open Issues"></a>
+<a href="https://codecov.io/gh/MatthiWare/VCDiff.Core"><img src="https://codecov.io/gh/MatthiWare/VCDiff.Core/branch/master/graph/badge.svg" alt="Codecov" /></a>
+<a href="https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)"><img src="https://img.shields.io/badge/license-apache%202.0-blue.svg" alt="MIT License"></a>
+</p>
+
 # Open-VCDiff .NET Core Implementation
 
 This is a full implementation of Open-VCDiff in C# based on [Google's open-vcdiff](https://github.com/google/open-vcdiff). This is written entirely in C# - no external C++ libraries required. This includes proper SDHC support with interleaving and checksums. 

@@ -9,13 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		build.cake = build.cake
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VCDiff.Core.Cli", "VCDiff.Core.Cli\VCDiff.Core.Cli.csproj", "{45021BF2-E6DD-440E-AB09-59A0B5F1E4D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VCDiff.Core.Cli", "VCDiff.Core.Cli\VCDiff.Core.Cli.csproj", "{45021BF2-E6DD-440E-AB09-59A0B5F1E4D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VCDiff.Core.Tests", "VCDiff.Core.Tests\VCDiff.Core.Tests.csproj", "{7AADB464-2308-4B97-8FEE-020912E17528}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VCDiff.Core.Tests", "VCDiff.Core.Tests\VCDiff.Core.Tests.csproj", "{7AADB464-2308-4B97-8FEE-020912E17528}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

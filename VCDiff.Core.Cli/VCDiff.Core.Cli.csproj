@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,8 @@
     <PackageLicenseUrl>https://github.com/MatthiWare/VCDiff.Core/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/MatthiWare/VCDiff.Core</RepositoryUrl>
     <PackageTags>VCDiff delta cli</PackageTags>
+    <RootNamespace>MatthiWare.Compression.VCDiff.Cli</RootNamespace>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
