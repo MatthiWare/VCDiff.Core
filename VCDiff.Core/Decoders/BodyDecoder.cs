@@ -32,7 +32,6 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         private IByteBuffer dict;
         private IByteBuffer target;
         private AddressCache addressCache;
-        private long bytesWritten = 0;
         private IList<byte> targetData;
         private readonly CustomCodeTableDecoder customTable;
 

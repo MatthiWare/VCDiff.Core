@@ -25,25 +25,33 @@ Using the CLI for creating delta patches and applying delta
 
 ### Create delta patch
 
-`dotnet .\VCDiff.Core.Cli.dll -e .\original.exe .\updated.exe .\delta 8`
+`dotnet .\VCDiff.Core.Cli create -o .\original.exe -n .\updated.exe -d .\delta -b 8`
 
-To encode/create delta patch you need to specify `-e [original] [updated] [output] [window size]`.
+or
+
+`dotnet .\VCDiff.Core.Cli create --old .\original.exe --new .\updated.exe --delta .\delta --buffer 8`
+
+To encode/create delta patch you need to specify `create -o [original] -n [updated] -d [output] -b [window size]`.
 
 _[Window size]: The maximum buffer size for window chunking (in megabytes)._
 
 ### Apply delta patch
 
-`dotnet .\VCDiff.Core.Cli.dll -d .\original.exe .\delta .\updated.exe`
+`dotnet .\VCDiff.Core.Cli patch -o .\original.exe -d .\delta -n .\updated.exe`
 
-To apply delta patch you need to specify `-d [original] [delta] [output]`.
+or 
+
+`dotnet .\VCDiff.Core.Cli patch --old .\original.exe --delta .\delta --new .\updated.exe`
+
+To apply delta patch you need to specify `apply -o [original] -d [delta] -o [output]`.
 
 ### Verify hashes in PowerShell
 
-- Encode
-`dotnet .\VCDiff.Core.Cli.dll -e .\original.exe .\updated.exe .\delta 8`
+- Encode/Create patch
+`dotnet .\VCDiff.Core.Cli create -o .\original.exe -n .\updated.exe -d .\delta -b 8`
 
-- Decode
-`dotnet .\VCDiff.Core.Cli.dll -d .\original.exe .\delta .\updated_with_delta.exe`
+- Decode/Apply patch
+`dotnet .\VCDiff.Core.Cli patch -o .\original.exe -d .\delta -n .\updated.exe`
 
 - Verify hash
 `get-filehash -Path ".\updated.exe", ".\updated_with_delta.exe" -algorithm MD5`
