@@ -3,6 +3,10 @@ os: Visual Studio 2017
 
 version: 0.1.{build}
 
+environment:
+  CODECOV_TOKEN:
+    secure: GgeOsPP+RVbbkIGt2RkhNhiLhf1K5WO2yM++zC4kgc7Z6YCFFX2XPwWqzpJqF/s7
+
 # Build script
 build_script:
   - ps: .\build.ps1 --target="AppVeyor" --verbosity=Verbose

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "VCDiff.Core.Cli": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "create -o blob.bin -n blob_updated.bin -d delta"
     }
   }
 }

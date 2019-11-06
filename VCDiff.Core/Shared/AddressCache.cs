@@ -199,7 +199,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
             long start = sin.Position;
             if (here < 0)
             {
-                return (int)VCDiffResult.ERROR;
+                return (int)VCDiffResult.Error;
             }
 
             if (!sin.CanRead)
@@ -219,7 +219,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
 
                 switch (encoded)
                 {
-                    case (int)VCDiffResult.ERROR:
+                    case (int)VCDiffResult.Error:
                         return encoded;
                     case (int)VCDiffResult.EOD:
                         sin.Position = start;
@@ -242,13 +242,13 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 }
                 else
                 {
-                    return (int)VCDiffResult.ERROR;
+                    return (int)VCDiffResult.Error;
                 }
             }
 
             if (!IsDecodedAddressValid(decoded, here))
             {
-                return (int)VCDiffResult.ERROR;
+                return (int)VCDiffResult.Error;
             }
             UpdateCache(decoded);
             return decoded;

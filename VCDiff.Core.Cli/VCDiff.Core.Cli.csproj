@@ -13,7 +13,12 @@
     <PackageTags>VCDiff delta cli</PackageTags>
     <RootNamespace>MatthiWare.Compression.VCDiff.Cli</RootNamespace>
     <StartupObject></StartupObject>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MatthiWare.CommandLineParser" Version="0.2.4" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VCDiff.Core\VCDiff.Core.csproj" />

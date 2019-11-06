@@ -1,8 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using MatthiWare.CommandLine;
+using MatthiWare.Compression.VCDiff.Cli.Options;
 using MatthiWare.Compression.VCDiff.Decoders;
 using MatthiWare.Compression.VCDiff.Encoders;
 using MatthiWare.Compression.VCDiff.Includes;
+using System;
+using System.IO;
 
 namespace MatthiWare.Compression.VCDiff.Cli
 {
@@ -10,42 +12,67 @@ namespace MatthiWare.Compression.VCDiff.Cli
     {
         static int Main(string[] args)
         {
-            string type = args[0]; // -e -d
-            var oldPath = args[1];
-            var newPath = args[2];
-            var outPath = args[3];
-
-            if (type != "-e" && type != "-d") throw new ArgumentException("Invalid parameters, use -e or -d");
-
-            var result = VCDiffResult.SUCCESS;
-
-            if (type == "-e")
+            var cliParserOptions = new CommandLineParserOptions
             {
-                var size = int.Parse(args[4]);
+                AppName = "VCDiff.Core.Cli"
+            };
 
-                using (var sold = File.OpenRead(oldPath)) // old file
-                using (var snew = File.OpenRead(newPath)) // new file
-                using (var sout = File.OpenWrite(outPath)) // delta file
-                    result = Encode(sold, snew, sout, size);
-            }
-            else if (type == "-d")
-            {
-                using (var sold = File.OpenRead(oldPath)) // old file
-                using (var snew = File.OpenRead(newPath)) // delta file
-                using (var sout = File.OpenWrite(outPath)) // out file
-                    result = Decode(sold, snew, sout);
-            }
+            var result = VCDiffResult.NOOP;
+
+            var parser = new CommandLineParser<ProgramOptions>();
+
+            parser.AddCommand<CreateOptions>()
+                .Name("create")
+                .Required(false)
+                .Description("Creates a delta patch from the given input")
+                .OnExecuting((o, opt) => result = Create(opt));
+
+            parser.AddCommand<PatchOptions>()
+                .Name("patch")
+                .Required(false)
+                .Description("Appplies the give patch to the file")
+                .OnExecuting((o, opt) => result = Patch(opt));
+
+            var parserResult = parser.Parse(args);
+
+            if (parserResult.HasErrors && !parserResult.HelpRequested)
+                result = VCDiffResult.Error;
 
             switch (result)
             {
-                case VCDiffResult.SUCCESS:
+                case VCDiffResult.NOOP:
+                    parser.Printer.PrintUsage();
+                    break;
+                case VCDiffResult.Succes:
                 default:
-                    return 0;
-                case VCDiffResult.ERROR:
+                    break;
+                case VCDiffResult.Error:
+                    Console.Error.WriteLine("Unexpected error occured");
+
                     return -1;
                 case VCDiffResult.EOD:
+                    Console.Error.WriteLine("Unexpected end of data");
+
                     return -2;
             }
+
+            return 0;
+        }
+
+        private static VCDiffResult Patch(PatchOptions opt)
+        {
+            using (var sold = File.OpenRead(opt.OldFile)) // old file
+            using (var snew = File.OpenRead(opt.DeltaFile)) // delta file
+            using (var sout = File.OpenWrite(opt.NewFile)) // out file
+                return Decode(sold, snew, sout);
+        }
+
+        private static VCDiffResult Create(CreateOptions opt)
+        {
+            using (var sold = File.OpenRead(opt.OldFile)) // old file
+            using (var snew = File.OpenRead(opt.NewFile)) // new file
+            using (var sout = File.OpenWrite(opt.DeltaFile)) // delta file
+                return Encode(sold, snew, sout, opt.BufferSize);
         }
 
         private static VCDiffResult Encode(Stream sold, Stream snew, Stream sout, int bufferSize)
@@ -61,7 +88,7 @@ namespace MatthiWare.Compression.VCDiff.Cli
 
             var result = decoder.Start();
 
-            if (result != VCDiffResult.SUCCESS)
+            if (result != VCDiffResult.Succes)
                 return result;
 
             return decoder.Decode(out _);

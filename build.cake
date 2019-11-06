@@ -1,3 +1,8 @@
+#tool nuget:?package=Codecov
+#addin nuget:?package=Cake.Codecov
+#tool "nuget:?package=OpenCover"
+#tool "nuget:?package=NUnit.ConsoleRunner"
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -12,8 +17,9 @@ var configuration = Argument("configuration", "Release");
 var project = "VCDiff.Core";
 var projectCli = $"{project}.Cli";
 var solution = $"./{project}.sln";
-var tests = $"./{project}.Tests/{project}.Tests.csproj";
+var tests = $"./output/{project}.Tests.dll";
 var publishPath = MakeAbsolute(Directory("./output"));
+var codedovToken = EnvironmentVariable("CODECOV_TOKEN");
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
@@ -39,6 +45,7 @@ Task("Build")
 		DotNetCoreBuild(solution,
 			new DotNetCoreBuildSettings 
 			{
+                ArgumentCustomization = arg => arg.AppendSwitch("/p:DebugType","=","Full"),
 				NoRestore = false,
 				Configuration = configuration
 			});
@@ -46,17 +53,32 @@ Task("Build")
 
 Task("Test")
     .IsDependentOn("Build")
-    .Does( () => {
-    DotNetCoreTest(tests,
-        new DotNetCoreTestSettings {
-            NoBuild = true,
-            NoRestore = true,
-            Configuration = configuration
+    .Does(() => {
+
+       // Information(MakeAbsolute(Directory(tests)));
+
+        OpenCover(tool => {
+
+                
+
+                tool.NUnit3(tests);
+            },
+            new FilePath("./TestResult.xml"),
+            new OpenCoverSettings()
+                .WithFilter($"+[{project}]*")
+                .WithFilter($"-[{project}.Tests]*"));
         });
+
+Task("Upload-Coverage")
+    .IsDependentOn("Test")
+    .Does(() =>
+{
+    // Upload a coverage report by providing the Codecov upload token.
+    Codecov("coverage.xml", codedovToken);
 });
 
 Task("Publish")
-    .IsDependentOn("Test")
+    .IsDependentOn("Build")
     .IsDependentOn("Clean-Publish")
     .Does( () => {
     DotNetCorePublish(solution,
@@ -72,6 +94,7 @@ Task("Default")
     .IsDependentOn("Test");
 
 Task("AppVeyor")
-    .IsDependentOn("Publish");
+    .IsDependentOn("Publish")
+    .IsDependentOn("Upload-Coverage");
 
 RunTarget(target);

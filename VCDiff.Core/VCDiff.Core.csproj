@@ -16,5 +16,6 @@
     <PackageTags>VCDiff delta</PackageTags>
     <Version>0.1.0</Version>
     <Authors>Matthias Beerens</Authors>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 </Project>

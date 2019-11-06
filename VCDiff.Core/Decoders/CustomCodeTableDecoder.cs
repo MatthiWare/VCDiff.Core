@@ -38,14 +38,14 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
         public VCDiffResult Decode(IByteBuffer source)
         {
-            VCDiffResult result = VCDiffResult.SUCCESS;
+            VCDiffResult result = VCDiffResult.Succes;
 
             //the custom codetable itself is a VCDiff file but it is required to be encoded with the standard table
             //the length should be the first thing after the hdr_indicator if not supporting compression
             //at least according to the RFC specs.
             int lengthOfCodeTable = VarIntBE.ParseInt32(source);
 
-            if (lengthOfCodeTable == 0) return VCDiffResult.ERROR;
+            if (lengthOfCodeTable == 0) return VCDiffResult.Error;
 
             ByteBuffer codeTable = new ByteBuffer(source.ReadBytes(lengthOfCodeTable));
 
@@ -58,7 +58,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             if (NearSize == 0 || SameSize == 0 || NearSize > byte.MaxValue || SameSize > byte.MaxValue)
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
             CustomTable = new CodeTable();
@@ -72,7 +72,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 VCDecoder decoder = new VCDecoder(dictionary, codeTable, sout);
                 result = decoder.Start();
 
-                if (result != VCDiffResult.SUCCESS)
+                if (result != VCDiffResult.Succes)
                 {
                     return result;
                 }
@@ -80,15 +80,15 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 long bytesWritten = 0;
                 result = decoder.Decode(out bytesWritten);
 
-                if (result != VCDiffResult.SUCCESS || bytesWritten == 0)
+                if (result != VCDiffResult.Succes || bytesWritten == 0)
                 {
-                    return VCDiffResult.ERROR;
+                    return VCDiffResult.Error;
                 }
 
                 //set the new table data that was decoded
                 if (!CustomTable.SetBytes(sout.ToArray()))
                 {
-                    result = VCDiffResult.ERROR;
+                    result = VCDiffResult.Error;
                 }
             }
 

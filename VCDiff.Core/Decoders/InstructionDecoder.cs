@@ -94,7 +94,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             {
                 switch (size = VarIntBE.ParseInt32(source))
                 {
-                    case (int)VCDiffResult.ERROR:
+                    case (int)VCDiffResult.Error:
                         mode = 0;
                         size = 0;
                         return VCDiffInstructionType.ERROR;
