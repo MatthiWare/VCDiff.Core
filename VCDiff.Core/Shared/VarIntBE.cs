@@ -46,7 +46,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 }
                 if (result > (int32MaxValue >> 7))
                 {
-                    return (int)VCDiffResult.ERROR;
+                    return (int)VCDiffResult.Error;
                 }
                 result = result << 7;
                 sin.Next();
@@ -67,7 +67,7 @@ namespace MatthiWare.Compression.VCDiff.Shared
                 }
                 if (result > (int64MaxValue >> 7))
                 {
-                    return (long)VCDiffResult.ERROR;
+                    return (long)VCDiffResult.Error;
                 }
                 result = result << 7;
                 sin.Next();

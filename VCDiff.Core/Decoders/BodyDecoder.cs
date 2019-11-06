@@ -72,7 +72,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
         /// <returns></returns>
         public VCDiffResult DecodeInterleave()
         {
-            VCDiffResult result = VCDiffResult.SUCCESS;
+            VCDiffResult result = VCDiffResult.Succes;
             //since interleave expected then the last point that was most likely decoded was the lengths section
             //so following is all data for the add run copy etc
             long interleaveLength = window.InstructionAndSizesLength;
@@ -119,7 +119,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                                     break;
                                 case VCDiffInstructionType.ERROR:
                                     targetData.Clear();
-                                    return VCDiffResult.ERROR;
+                                    return VCDiffResult.Error;
                                 default:
                                     break;
                             }
@@ -158,7 +158,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                                 break;
                             default:
                                 targetData.Clear();
-                                return VCDiffResult.ERROR;
+                                return VCDiffResult.Error;
                         }
 
                         if (result == VCDiffResult.EOD)
@@ -193,7 +193,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                 if (adler != window.Checksum)
                 {
-                    result = VCDiffResult.ERROR;
+                    result = VCDiffResult.Error;
                 }
             }
 
@@ -213,7 +213,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             InstructionDecoder instrDecoder = new InstructionDecoder(instructionBuffer, customTable);
 
-            VCDiffResult result = VCDiffResult.SUCCESS;
+            VCDiffResult result = VCDiffResult.Succes;
 
             while (Decoded < window.DecodedDeltaLength && instructionBuffer.CanRead)
             {
@@ -227,7 +227,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         return VCDiffResult.EOD;
                     case VCDiffInstructionType.ERROR:
                         targetData.Clear();
-                        return VCDiffResult.ERROR;
+                        return VCDiffResult.Error;
                     default:
                         break;
                 }
@@ -245,7 +245,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         break;
                     default:
                         targetData.Clear();
-                        return VCDiffResult.ERROR;
+                        return VCDiffResult.Error;
                 }
             }
 
@@ -255,7 +255,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                 if (adler != window.Checksum)
                 {
-                    result = VCDiffResult.ERROR;
+                    result = VCDiffResult.Error;
                 }
             }
 
@@ -270,14 +270,14 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             switch ((VCDiffResult)decoded)
             {
-                case VCDiffResult.ERROR:
-                    return VCDiffResult.ERROR;
+                case VCDiffResult.Error:
+                    return VCDiffResult.Error;
                 case VCDiffResult.EOD:
                     return VCDiffResult.EOD;
                 default:
                     if (decoded < 0 || decoded > here)
                     {
-                        return VCDiffResult.ERROR;
+                        return VCDiffResult.Error;
                     }
                     break;
             }
@@ -292,7 +292,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                     targetData.Add(b);
 
                 Decoded += size;
-                return VCDiffResult.SUCCESS;
+                return VCDiffResult.Succes;
             }
 
             ///will come back to this once
@@ -321,7 +321,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             target.Position = decoded;
             sout.writeBytes(target.ReadBytes(size));*/
 
-            return VCDiffResult.ERROR;
+            return VCDiffResult.Error;
         }
 
         VCDiffResult DecodeRun(int size, ByteBuffer addRun)
@@ -346,7 +346,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             Decoded += size;
 
-            return VCDiffResult.SUCCESS;
+            return VCDiffResult.Succes;
         }
 
         VCDiffResult DecodeAdd(int size, ByteBuffer addRun)
@@ -368,7 +368,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 targetData.Add(b);
 
             Decoded += size;
-            return VCDiffResult.SUCCESS;
+            return VCDiffResult.Succes;
         }
 
         public void Dispose()

@@ -67,10 +67,10 @@ namespace MatthiWare.Compression.VCDiff.Encoders
         {
             if (newData.Length == 0 || oldData.Length == 0)
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
-            VCDiffResult result = VCDiffResult.SUCCESS;
+            VCDiffResult result = VCDiffResult.Succes;
 
             oldData.Position = 0;
             newData.Position = 0;

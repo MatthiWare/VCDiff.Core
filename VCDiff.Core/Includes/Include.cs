@@ -22,9 +22,25 @@ namespace MatthiWare.Compression.VCDiff.Includes
 {
     public enum VCDiffResult
     {
-        SUCCESS = 0,
-        ERROR = -1,
-        EOD = -2
+        /// <summary>
+        /// Indicates succes
+        /// </summary>
+        Succes = 0,
+
+        /// <summary>
+        /// Indicates an error occured
+        /// </summary>
+        Error = -1,
+
+        /// <summary>
+        /// End of data
+        /// </summary>
+        EOD = -2,
+
+        /// <summary>
+        /// Indicates nothing happend
+        /// </summary>
+        NOOP = 1
     }
 
     // The possible values for the Hdr_Indicator field, as described

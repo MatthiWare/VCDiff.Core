@@ -91,28 +91,28 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
             if (V != MagicBytes[0])
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
             if (C != MagicBytes[1])
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
             if (D != MagicBytes[2])
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
             if (version != 0x00 && version != 'S')
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
             //compression not supported
             if ((hdr & (int)VCDiffCodeFlags.VCDDECOMPRESS) != 0)
             {
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
             //custom code table!
@@ -125,7 +125,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                 customTable = new CustomCodeTableDecoder();
                 VCDiffResult result = customTable.Decode(delta);
 
-                if (result != VCDiffResult.SUCCESS)
+                if (result != VCDiffResult.Succes)
                 {
                     return result;
                 }
@@ -138,7 +138,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             //buffer all the dictionary up front
             dict.BufferAll();
 
-            return VCDiffResult.SUCCESS;
+            return VCDiffResult.Succes;
         }
 
         /// <summary>
@@ -153,10 +153,10 @@ namespace MatthiWare.Compression.VCDiff.Decoders
             if (!IsStarted)
             {
                 bytesWritten = 0;
-                return VCDiffResult.ERROR;
+                return VCDiffResult.Error;
             }
 
-            VCDiffResult result = VCDiffResult.SUCCESS;
+            VCDiffResult result = VCDiffResult.Succes;
             bytesWritten = 0;
 
             if (!delta.CanRead) return VCDiffResult.EOD;
@@ -177,7 +177,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                             //decodedinterleave actually has an internal loop for waiting and streaming the incoming rest of the interleaved window
                             result = body.DecodeInterleave();
 
-                            if (result != VCDiffResult.SUCCESS && result != VCDiffResult.EOD)
+                            if (result != VCDiffResult.Succes && result != VCDiffResult.EOD)
                             {
                                 return result;
                             }
@@ -194,7 +194,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
 
                             result = body.Decode();
 
-                            if (result != VCDiffResult.SUCCESS)
+                            if (result != VCDiffResult.Succes)
                             {
                                 return result;
                             }
@@ -208,7 +208,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                             //in the stream
                             result = body.Decode();
 
-                            if (result != VCDiffResult.SUCCESS)
+                            if (result != VCDiffResult.Succes)
                             {
                                 return result;
                             }
@@ -218,7 +218,7 @@ namespace MatthiWare.Compression.VCDiff.Decoders
                         else
                         {
                             //invalid file
-                            return VCDiffResult.ERROR;
+                            return VCDiffResult.Error;
                         }
                     }
                 }

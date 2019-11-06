@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using MatthiWare.CommandLine;
+﻿using MatthiWare.CommandLine;
 using MatthiWare.Compression.VCDiff.Cli.Options;
 using MatthiWare.Compression.VCDiff.Decoders;
 using MatthiWare.Compression.VCDiff.Encoders;
 using MatthiWare.Compression.VCDiff.Includes;
+using System;
+using System.IO;
 
 namespace MatthiWare.Compression.VCDiff.Cli
 {
@@ -17,9 +17,9 @@ namespace MatthiWare.Compression.VCDiff.Cli
                 AppName = "VCDiff.Core.Cli"
             };
 
-            var result = VCDiffResult.ERROR;
+            var result = VCDiffResult.NOOP;
 
-            var parser = new CommandLineParser();
+            var parser = new CommandLineParser<ProgramOptions>();
 
             parser.AddCommand<CreateOptions>()
                 .Name("create")
@@ -36,14 +36,17 @@ namespace MatthiWare.Compression.VCDiff.Cli
             var parserResult = parser.Parse(args);
 
             if (parserResult.HasErrors && !parserResult.HelpRequested)
-                result = VCDiffResult.ERROR;
+                result = VCDiffResult.Error;
 
             switch (result)
             {
-                case VCDiffResult.SUCCESS:
+                case VCDiffResult.NOOP:
+                    parser.Printer.PrintUsage();
+                    break;
+                case VCDiffResult.Succes:
                 default:
-                    return 0;
-                case VCDiffResult.ERROR:
+                    break;
+                case VCDiffResult.Error:
                     Console.Error.WriteLine("Unexpected error occured");
 
                     return -1;
@@ -52,6 +55,8 @@ namespace MatthiWare.Compression.VCDiff.Cli
 
                     return -2;
             }
+
+            return 0;
         }
 
         private static VCDiffResult Patch(PatchOptions opt)
@@ -83,7 +88,7 @@ namespace MatthiWare.Compression.VCDiff.Cli
 
             var result = decoder.Start();
 
-            if (result != VCDiffResult.SUCCESS)
+            if (result != VCDiffResult.Succes)
                 return result;
 
             return decoder.Decode(out _);

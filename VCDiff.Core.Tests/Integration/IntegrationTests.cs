@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using MatthiWare.Compression.VCDiff.Decoders;
+﻿using MatthiWare.Compression.VCDiff.Decoders;
 using MatthiWare.Compression.VCDiff.Encoders;
 using MatthiWare.Compression.VCDiff.Includes;
 using NUnit.Framework;
+using System;
+using System.IO;
 
 namespace VCDiff.Core.Tests.Integration
 {
@@ -30,7 +28,7 @@ namespace VCDiff.Core.Tests.Integration
             var sDelta = new MemoryStream(new byte[size], true);
 
             var coder = new VCCoder(sOld, sNew, sDelta);
-            Assert.AreEqual(VCDiffResult.SUCCESS, coder.Encode());
+            Assert.AreEqual(VCDiffResult.Succes, coder.Encode());
 
             TestContext.Out.WriteLine($"Delta is {sDelta.Position / 1024 / 1024} MB's");
 
@@ -42,15 +40,15 @@ namespace VCDiff.Core.Tests.Integration
             var sPatched = new MemoryStream(new byte[size], true);
 
             var decoder = new VCDecoder(sOld, sDelta, sPatched);
-            Assert.AreEqual(VCDiffResult.SUCCESS, decoder.Start());
-            Assert.AreEqual(VCDiffResult.SUCCESS, decoder.Decode(out long bytesWritten));
+            Assert.AreEqual(VCDiffResult.Succes, decoder.Start());
+            Assert.AreEqual(VCDiffResult.Succes, decoder.Decode(out long bytesWritten));
 
             TestContext.Out.WriteLine($"Written {bytesWritten / 1024 / 1024} MB's");
 
             Assert.AreEqual(sNew.ToArray(), sPatched.ToArray());
         }
 
-        private Random random = new Random(DateTime.Now.GetHashCode());
+        private static readonly Random random = new Random(DateTime.Now.GetHashCode());
 
         private byte[] CreateRandomByteArray(int size)
         {
