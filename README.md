@@ -17,7 +17,7 @@ Original repo [Metric/VCDiff](https://github.com/Metric/VCDiff)
 
 ## Requirements
 - .NET Standard 2.0+ _(code)_
-- .NET Core 2.1 _(CLI)_
+- .NET Core 3.1 _(CLI)_
 
 # CLI
 
@@ -25,25 +25,26 @@ Using the CLI for creating delta patches and applying delta
 
 ### Create delta patch
 
+To encode/create delta patch you need to specify `create -o [original] -n [updated] -d [output] -b [window size]`.
+
+`dotnet .\VCDiff.Core.Cli create .\original.exe .\updated.exe .\delta -b 8`
+
 `dotnet .\VCDiff.Core.Cli create -o .\original.exe -n .\updated.exe -d .\delta -b 8`
 
-or
-
 `dotnet .\VCDiff.Core.Cli create --old .\original.exe --new .\updated.exe --delta .\delta --buffer 8`
-
-To encode/create delta patch you need to specify `create -o [original] -n [updated] -d [output] -b [window size]`.
 
 _[Window size]: The maximum buffer size for window chunking (in megabytes)._
 
 ### Apply delta patch
 
-`dotnet .\VCDiff.Core.Cli patch -o .\original.exe -d .\delta -n .\updated.exe`
+To apply delta patch you need to specify `patch [original] [delta] [output]`.
 
-or 
+`dotnet .\VCDiff.Core.Cli patch .\original.exe .\delta .\updated.exe`
+
+`dotnet .\VCDiff.Core.Cli patch -o .\original.exe -d .\delta -n .\updated.exe`
 
 `dotnet .\VCDiff.Core.Cli patch --old .\original.exe --delta .\delta --new .\updated.exe`
 
-To apply delta patch you need to specify `apply -o [original] -d [delta] -o [output]`.
 
 ### Verify hashes in PowerShell
 

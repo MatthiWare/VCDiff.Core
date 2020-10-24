@@ -5,6 +5,7 @@ using MatthiWare.Compression.VCDiff.Encoders;
 using MatthiWare.Compression.VCDiff.Includes;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace MatthiWare.Compression.VCDiff.Cli
 {
@@ -36,24 +37,24 @@ namespace MatthiWare.Compression.VCDiff.Cli
             var parserResult = parser.Parse(args);
 
             if (parserResult.HasErrors && !parserResult.HelpRequested)
+            { 
                 result = VCDiffResult.Error;
+            }
 
             switch (result)
             {
                 case VCDiffResult.NOOP:
                     parser.Printer.PrintUsage();
                     break;
-                case VCDiffResult.Succes:
-                default:
-                    break;
                 case VCDiffResult.Error:
                     Console.Error.WriteLine("Unexpected error occured");
-
                     return -1;
                 case VCDiffResult.EOD:
                     Console.Error.WriteLine("Unexpected end of data");
-
                     return -2;
+                case VCDiffResult.Succes:
+                default:
+                    break;
             }
 
             return 0;
@@ -64,7 +65,9 @@ namespace MatthiWare.Compression.VCDiff.Cli
             using (var sold = File.OpenRead(opt.OldFile)) // old file
             using (var snew = File.OpenRead(opt.DeltaFile)) // delta file
             using (var sout = File.OpenWrite(opt.NewFile)) // out file
+            { 
                 return Decode(sold, snew, sout);
+            }
         }
 
         private static VCDiffResult Create(CreateOptions opt)
@@ -72,7 +75,9 @@ namespace MatthiWare.Compression.VCDiff.Cli
             using (var sold = File.OpenRead(opt.OldFile)) // old file
             using (var snew = File.OpenRead(opt.NewFile)) // new file
             using (var sout = File.OpenWrite(opt.DeltaFile)) // delta file
+            { 
                 return Encode(sold, snew, sout, opt.BufferSize);
+            }
         }
 
         private static VCDiffResult Encode(Stream sold, Stream snew, Stream sout, int bufferSize)
@@ -89,7 +94,9 @@ namespace MatthiWare.Compression.VCDiff.Cli
             var result = decoder.Start();
 
             if (result != VCDiffResult.Succes)
+            { 
                 return result;
+            }
 
             return decoder.Decode(out _);
         }
